@@ -69,6 +69,8 @@ const createPlanton = (configuration: PlantonConfigurationInput): Planton => {
   const tasks: InternalTask[] = [];
 
   for (const inputTask of configuration.tasks) {
+    log.debug('registered %s task', inputTask.name);
+
     const calculateDelay = inputTask.delay || (() => {
       return 1_000;
     });
