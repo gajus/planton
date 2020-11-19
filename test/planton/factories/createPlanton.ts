@@ -5,8 +5,8 @@ import {
   createPlanton,
 } from '../../../src/factories/createPlanton';
 
-test('polls tasks at a interval', async (t) => {
-  const poll = sinon
+test('schedules tasks at a interval', async (t) => {
+  const schedule = sinon
     .stub()
     .returns([]);
 
@@ -20,20 +20,20 @@ test('polls tasks at a interval', async (t) => {
           return 90;
         },
         name: 'foo',
-        poll,
+        schedule,
       },
     ],
   });
 
   await delay(900);
 
-  t.is(poll.callCount, 10);
+  t.is(schedule.callCount, 10);
 
   await planton.terminate();
 });
 
-test('stops polling after Planton is terminated', async (t) => {
-  const poll = sinon
+test('stops scheduleing after Planton is terminated', async (t) => {
+  const schedule = sinon
     .stub()
     .onFirstCall()
     .returns([])
@@ -50,24 +50,24 @@ test('stops polling after Planton is terminated', async (t) => {
           return 200;
         },
         name: 'foo',
-        poll,
+        schedule,
       },
     ],
   });
 
   await delay(50);
 
-  t.is(poll.callCount, 1);
+  t.is(schedule.callCount, 1);
 
   await planton.terminate();
 
   await delay(300);
 
-  t.is(poll.callCount, 1);
+  t.is(schedule.callCount, 1);
 });
 
 test('emits "task" event for every new task instruction', async (t) => {
-  const poll = sinon
+  const schedule = sinon
     .stub()
     .returns([
       'bar',
@@ -86,7 +86,7 @@ test('emits "task" event for every new task instruction', async (t) => {
           return 100;
         },
         name: 'foo',
-        poll,
+        schedule,
       },
     ],
   });
@@ -108,8 +108,8 @@ test('emits "task" event for every new task instruction', async (t) => {
   await planton.terminate();
 });
 
-test('does not attempt to poll tasks when active tasks >= concurrency limit', async (t) => {
-  const poll = sinon
+test('does not attempt to schedule tasks when active tasks >= concurrency limit', async (t) => {
+  const schedule = sinon
     .stub()
     .throws();
 
@@ -129,7 +129,7 @@ test('does not attempt to poll tasks when active tasks >= concurrency limit', as
           return 100;
         },
         name: 'foo',
-        poll,
+        schedule,
       },
     ],
   });
@@ -139,17 +139,15 @@ test('does not attempt to poll tasks when active tasks >= concurrency limit', as
   await delay(150);
 
   t.is(eventHandler.callCount, 0);
-  t.is(poll.callCount, 0);
+  t.is(schedule.callCount, 0);
 
   await planton.terminate();
 });
 
-test('invokes poll with the limit adjusted based on the number of current active tasks', async (t) => {
-  const poll = sinon
+test('invokes schedule with the limit adjusted based on the number of current active tasks', async (t) => {
+  const schedule = sinon
     .stub()
     .returns([]);
-
-  const eventHandler = sinon.spy();
 
   const planton = createPlanton({
     getActiveTaskInstructions: () => {
@@ -165,25 +163,23 @@ test('invokes poll with the limit adjusted based on the number of current active
           return 100;
         },
         name: 'foo',
-        poll,
+        schedule,
       },
     ],
   });
 
   await delay(50);
 
-  t.is(poll.callCount, 1);
-  t.is(poll.firstCall.firstArg.limit, 1);
+  t.is(schedule.callCount, 1);
+  t.is(schedule.firstCall.firstArg.limit, 1);
 
   await planton.terminate();
 });
 
-test('invokes poll with the current active task instructions', async (t) => {
-  const poll = sinon
+test('invokes schedule with the current active task instructions', async (t) => {
+  const schedule = sinon
     .stub()
     .returns([]);
-
-  const eventHandler = sinon.spy();
 
   const planton = createPlanton({
     getActiveTaskInstructions: () => {
@@ -199,15 +195,15 @@ test('invokes poll with the current active task instructions', async (t) => {
           return 100;
         },
         name: 'foo',
-        poll,
+        schedule,
       },
     ],
   });
 
   await delay(50);
 
-  t.is(poll.callCount, 1);
-  t.deepEqual(poll.firstCall.firstArg.activeTaskInstructions, [
+  t.is(schedule.callCount, 1);
+  t.deepEqual(schedule.firstCall.firstArg.activeTaskInstructions, [
     'foo',
     'bar',
   ]);
@@ -215,8 +211,8 @@ test('invokes poll with the current active task instructions', async (t) => {
   await planton.terminate();
 });
 
-test('invokes delay with the number of attempts since last poll that produced results', async (t) => {
-  const poll = sinon
+test('invokes delay with the number of attempts since last schedule that produced results', async (t) => {
+  const schedule = sinon
     .stub()
     .onFirstCall()
     .returns([])
@@ -227,8 +223,6 @@ test('invokes delay with the number of attempts since last poll that produced re
 
   const calculateDelay = sinon.stub().returns(50);
 
-  const eventHandler = sinon.spy();
-
   const planton = createPlanton({
     getActiveTaskInstructions: () => {
       return [];
@@ -237,14 +231,14 @@ test('invokes delay with the number of attempts since last poll that produced re
       {
         delay: calculateDelay,
         name: 'foo',
-        poll,
+        schedule,
       },
     ],
   });
 
   await delay(100);
 
-  t.is(poll.callCount, 2);
+  t.is(schedule.callCount, 2);
 
   t.is(calculateDelay.firstCall.firstArg, 1);
   t.is(calculateDelay.secondCall.firstArg, 0);
@@ -252,7 +246,7 @@ test('invokes delay with the number of attempts since last poll that produced re
   await planton.terminate();
 });
 
-test('terminate waits for polling to complete', async (t) => {
+test('terminate waits for scheduleing to complete', async (t) => {
   const planton = createPlanton({
     getActiveTaskInstructions: () => {
       return [];
@@ -263,7 +257,7 @@ test('terminate waits for polling to complete', async (t) => {
           return 50;
         },
         name: 'foo',
-        poll: async () => {
+        schedule: async () => {
           await delay(500);
 
           return [];

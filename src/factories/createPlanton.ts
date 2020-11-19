@@ -18,12 +18,12 @@ type TaskEvent = {
   readonly instruction: string;
 };
 
-type PollConfigurationInput = {
+type ScheduleConfigurationInput = {
   readonly activeTaskInstructions: TaskInstruction[];
   readonly limit: number;
 };
 
-type Poll = (configuration: PollConfigurationInput) => Promise<TaskInstruction[]>;
+type Schedule = (configuration: ScheduleConfigurationInput) => Promise<TaskInstruction[]>;
 
 type Delay = (attemptNumber: number) => number;
 
@@ -32,7 +32,7 @@ type TaskInput = {
   readonly exclusive?: boolean;
   readonly delay?: Delay;
   readonly name: string;
-  readonly poll: Poll;
+  readonly schedule: Schedule;
 };
 
 type PlantonConfigurationInput = {
@@ -46,7 +46,7 @@ type InternalTask = {
   readonly concurrency: number;
   readonly exclusive: boolean;
   readonly name: string;
-  readonly poll: Poll;
+  readonly schedule: Schedule;
   readonly terminate: () => void;
 };
 
@@ -82,7 +82,7 @@ const createPlanton = (configuration: PlantonConfigurationInput): Planton => {
       concurrency,
       exclusive: inputTask.exclusive !== false,
       name: inputTask.name,
-      poll: inputTask.poll,
+      schedule: inputTask.schedule,
     };
 
     const terminate = (() => {
@@ -103,7 +103,7 @@ const createPlanton = (configuration: PlantonConfigurationInput): Planton => {
             break;
           }
 
-          const taskInstructions = await inputTask.poll({
+          const taskInstructions = await inputTask.schedule({
             activeTaskInstructions,
             limit: concurrency - activeTaskInstructions.length,
           });

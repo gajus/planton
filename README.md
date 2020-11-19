@@ -43,7 +43,7 @@ const planton = createPlanton({
       // active instructions for the current task.
       concurrency: 2,
       delay: (attemptNumber) => {
-        // `attemptNumber` indicates how many times `poll` was called
+        // `attemptNumber` indicates how many times `schedule` was called
         // without producing new instructions.
         if (attemptNumber === 0) {
           return 100;
@@ -57,7 +57,7 @@ const planton = createPlanton({
         );
       },
       name: 'send_user_email',
-      poll: ({activeTaskInstructions, limit}) => {
+      schedule: ({activeTaskInstructions, limit}) => {
         return pool.anyFirst(sql`
           UPDATE user_account as ua2
           SET email_sent_at = now()
