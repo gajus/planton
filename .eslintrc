@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "canonical",
+    "canonical/typescript"
+  ],
+  "root": true,
+  "rules": {
+    "fp/no-events": 0
+  }
+}
