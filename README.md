@@ -9,6 +9,7 @@
 Database-agnostic task scheduler.
 
 * [Motivation](#motivation)
+* [API](#api)
 * [Usage](#usage)
   * [Handling Events](#handling-events)
   * [Handling Errors](#handling-errors)
@@ -21,6 +22,55 @@ Database-agnostic task scheduler.
 In every project that I have undertaken, there was always a need to run a periodic task of some sorts, e.g. hard-delete after 14-day soft delete. Typically this problem is solved by using a CRON-like system that simply runs a task at a set interval. However, ad-hoc solutions are added as requirements evolve, e.g. the need to run a task at a different interval and concurrency depending on whether the last attempt at running the task was successful.
 
 Planton is a database-agnostic task scheduler for these type of tasks that abstracts logic for handling concurrency and different task scheduling strategies.
+
+## API
+
+```js
+import {
+  createPlanton,
+} from 'planton';
+
+/**
+ * @property activeTaskInstructions A list of active task instructions as retrieved using `getActiveTaskInstructions`.
+ * @property limit A limit derived based on the value of `concurrency` and the number of `activeTaskInstructions` (CONCURRENCY - ACTIVE TASK INSTRUCTIONS = LIMIT).
+ */
+type ScheduleConfiguration = {
+  readonly activeTaskInstructions: TaskInstruction[];
+  readonly limit: number;
+};
+
+/**
+ *
+ */
+type Schedule = (configuration: ScheduleConfiguration) => Promise<TaskInstruction[]>;
+
+/**
+ * Produces a number (time in milliseconds) representing how long Planton must wait before attempting `schedule` function.
+ */
+type Delay = (attemptNumber: number) => number;
+
+/**
+ * @property concurrency Together with `getActiveTaskInstructions`, the `concurrency` setting is used to generate `limit` value that is passed to task scheduler.
+ * @property name A unique name of the task. Used to identify task scheduler in errors and for tracking active task instructions (see `getActiveTaskInstructions`).
+ */
+type TaskInput = {
+  readonly concurrency?: number;
+  readonly delay?: Delay;
+  readonly name: string;
+  readonly schedule: Schedule;
+};
+
+/**
+ * @property getActiveTaskInstructions Returns list of tasks that are currently being executed. Used for concurrency control.
+ */
+type PlantonConfiguration = {
+  readonly getActiveTaskInstructions: (taskName: string) => TaskInstruction[];
+  readonly tasks: TaskInput[]
+};
+
+createPlanton(configuration: PlantonConfigurationInput): Planton;
+
+```
 
 ## Usage
 

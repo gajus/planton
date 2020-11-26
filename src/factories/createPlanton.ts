@@ -30,15 +30,29 @@ type ErrorEvent = {
   readonly error: Error;
 };
 
-type ScheduleConfigurationInput = {
+/**
+ * @property activeTaskInstructions A list of active task instructions as retrieved using `getActiveTaskInstructions`.
+ * @property limit A limit derived based on the value of `concurrency` and the number of `activeTaskInstructions` (CONCURRENCY - ACTIVE TASK INSTRUCTIONS = LIMIT).
+ */
+type ScheduleConfiguration = {
   readonly activeTaskInstructions: TaskInstruction[];
   readonly limit: number;
 };
 
-type Schedule = (configuration: ScheduleConfigurationInput) => Promise<TaskInstruction[]>;
+/**
+ *
+ */
+type Schedule = (configuration: ScheduleConfiguration) => Promise<TaskInstruction[]>;
 
+/**
+ * Produces a number (time in milliseconds) representing how long Planton must wait before attempting `schedule` function.
+ */
 type Delay = (attemptNumber: number) => number;
 
+/**
+ * @property concurrency Together with `getActiveTaskInstructions`, the `concurrency` setting is used to generate `limit` value that is passed to task scheduler.
+ * @property name A unique name of the task. Used to identify task scheduler in errors and for tracking active task instructions (see `getActiveTaskInstructions`).
+ */
 type TaskInput = {
   readonly concurrency?: number;
   readonly delay?: Delay;
@@ -46,7 +60,10 @@ type TaskInput = {
   readonly schedule: Schedule;
 };
 
-type PlantonConfigurationInput = {
+/**
+ * @property getActiveTaskInstructions Returns list of tasks that are currently being executed. Used for concurrency control.
+ */
+type PlantonConfiguration = {
   readonly getActiveTaskInstructions: (taskName: string) => TaskInstruction[];
   readonly tasks: TaskInput[]
 };
@@ -70,7 +87,7 @@ type Planton = {
   terminate: () => Promise<void>;
 }
 
-const createPlanton = (configuration: PlantonConfigurationInput): Planton => {
+const createPlanton = (configuration: PlantonConfiguration): Planton => {
   const {
     getActiveTaskInstructions,
   } = configuration;
