@@ -132,6 +132,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
 
       let active = true;
 
+      // eslint-disable-next-line complexity
       (async () => {
         // eslint-disable-next-line no-unmodified-loop-condition
         while (active) {
@@ -166,7 +167,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
 
           if (!Array.isArray(taskInstructions)) {
             events.emit('error', {
-              error: new UnexpectedTaskInstructionsError(task.name, taskInstructions),
+              error: new UnexpectedTaskInstructionsError(task.name || '', taskInstructions),
               taskName: task.name || '',
             });
 
@@ -180,7 +181,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
 
           if (taskInstructions.length > limit) {
             events.emit('error', {
-              error: new UnexpectedTaskInstructionsError(task.name, taskInstructions),
+              error: new UnexpectedTaskInstructionsError(task.name || '', taskInstructions),
               taskName: task.name || '',
             });
 
@@ -197,7 +198,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
           for (const taskInstruction of taskInstructions) {
             if (typeof taskInstruction !== 'string') {
               events.emit('error', {
-                error: new UnexpectedTaskInstructionsError(task.name, taskInstructions),
+                error: new UnexpectedTaskInstructionsError(task.name || '', taskInstructions),
                 taskName: task.name || '',
               });
 
