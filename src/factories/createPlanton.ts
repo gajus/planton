@@ -113,7 +113,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
     const concurrency = inputTask.concurrency === undefined ? 1 : inputTask.concurrency;
 
     if (concurrency < 1) {
-      throw new InvalidTaskConfigurationNameError('Task concurrency must be greater than 0.');
+      throw new InvalidTaskConfigurationNameError(inputTask.name, 'Task concurrency must be greater than 0.');
     }
 
     const task: Partial<InternalTask> = {
@@ -166,7 +166,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
 
           if (!Array.isArray(taskInstructions)) {
             events.emit('error', {
-              error: new UnexpectedTaskInstructionsError(taskInstructions),
+              error: new UnexpectedTaskInstructionsError(task.name, taskInstructions),
               taskName: task.name || '',
             });
 
@@ -180,7 +180,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
 
           if (taskInstructions.length > limit) {
             events.emit('error', {
-              error: new UnexpectedTaskInstructionsError(taskInstructions),
+              error: new UnexpectedTaskInstructionsError(task.name, taskInstructions),
               taskName: task.name || '',
             });
 
@@ -197,7 +197,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
           for (const taskInstruction of taskInstructions) {
             if (typeof taskInstruction !== 'string') {
               events.emit('error', {
-                error: new UnexpectedTaskInstructionsError(taskInstructions),
+                error: new UnexpectedTaskInstructionsError(task.name, taskInstructions),
                 taskName: task.name || '',
               });
 

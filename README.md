@@ -132,17 +132,26 @@ Planton produces 2 types of errors:
 
 Produced when Planton is initiated with non-unique task names.
 
-`duplicateTaskName` error property describes the offending task name.
+Additional error properties:
+
+* `duplicateTaskName` describes the offending task name.
 
 #### `InvalidTaskConfigurationNameError`
 
 Produced when Planton is initiated with invalid configuration, e.g. `concurrency` value less than 1.
 
+Additional error properties:
+
+* `taskName`
+
 #### `UnexpectedTaskInstructionsError`
 
 Produced when task scheduler produces a result that is not an array or members of array are not strings.
 
-`unexpectedTaskInstructions` error property describes the offending instructions.
+Additional error properties:
+
+* `taskName`
+* `unexpectedTaskInstructions` describes the offending instructions.
 
 Tip: [Inspect logs](#inspecting-logs) for additional details.
 

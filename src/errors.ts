@@ -17,11 +17,15 @@ export class UnexpectedStateError extends PlantonError {
 }
 
 export class InvalidTaskConfigurationNameError extends UnexpectedStateError {
-  constructor (message: string) {
+  taskName: string;
+
+  constructor (taskName: string, message: string) {
     super(
       message,
       'INVALID_TASK_CONFIGURATION',
     );
+
+    this.taskName = taskName;
   }
 }
 
@@ -39,14 +43,17 @@ export class DuplicateTaskNameError extends UnexpectedStateError {
 }
 
 export class UnexpectedTaskInstructionsError extends UnexpectedStateError {
+  taskName: string;
+
   unexpectedTaskInstructions: any;
 
-  constructor (unexpectedTaskInstructions: any) {
+  constructor (taskName: string, unexpectedTaskInstructions: any) {
     super(
       'Unexpected task instructions.',
       'UNEXPECTED_TASK_INSTRUCTIONS',
     );
 
+    this.taskName = taskName;
     this.unexpectedTaskInstructions = unexpectedTaskInstructions;
   }
 }
