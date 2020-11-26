@@ -18,6 +18,11 @@ type TaskEvent = {
   readonly instruction: string;
 };
 
+type ErrorEvent = {
+  readonly taskName: string;
+  readonly error: Error;
+};
+
 type ScheduleConfigurationInput = {
   readonly activeTaskInstructions: TaskInstruction[];
   readonly limit: number;
@@ -51,6 +56,7 @@ type InternalTask = {
 };
 
 type EventMap = {
+  error: ErrorEvent,
   task: TaskEvent,
 };
 
@@ -103,10 +109,21 @@ const createPlanton = (configuration: PlantonConfigurationInput): Planton => {
             break;
           }
 
-          const taskInstructions = await inputTask.schedule({
-            activeTaskInstructions,
-            limit: concurrency - activeTaskInstructions.length,
-          });
+          let taskInstructions: TaskInstruction[];
+
+          try {
+            taskInstructions = await inputTask.schedule({
+              activeTaskInstructions,
+              limit: concurrency - activeTaskInstructions.length,
+            });
+          } catch (error) {
+            events.emit('error', {
+              error,
+              taskName: task.name || '',
+            });
+
+            taskInstructions = [];
+          }
 
           if (taskInstructions.length > 0) {
             task.attemptNumber = 0;

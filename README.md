@@ -78,12 +78,12 @@ const planton = createPlanton({
   ],
 });
 
-planton.events.on('task', (task) => {
+planton.events.on('task', (taskEvent: TaskEvent) => {
   // {
   //   taskName: 'send_user_email',
   //   instruction: 1,
   // };
-  console.log(task);
+  console.log(taskEvent);
 });
 
 ```
@@ -158,3 +158,39 @@ Use one the popular message queue systems:
 
 * [RabbitMQ](https://www.rabbitmq.com/)
 * [BullMQ](https://github.com/taskforcesh/bullmq)
+
+## Handling events
+
+`planton.events` is an instance of an event emitter.
+
+Planton emits 2 types of events:
+
+### `task`
+
+Emitted for each result returned by the schedulers.
+
+```js
+planton.events.on('task', (taskEvent: TaskEvent) => {
+  // {
+  //   taskName: 'send_user_email',
+  //   instruction: 1,
+  // };
+  console.log(taskEvent);
+});
+
+```
+
+### `error`
+
+Emitter for errors that happen during scheduling.
+
+```js
+planton.events.on('error', (errorEvent: ErrorEvent) => {
+  // {
+  //   taskName: 'send_user_email',
+  //   error: Error,
+  // };
+  console.log(errorEvent);
+});
+
+```

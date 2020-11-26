@@ -272,3 +272,43 @@ test('terminate waits for scheduling to complete', async (t) => {
 
   t.true(Date.now() - startTermination >= 500);
 });
+
+test('unhandled scheduler errors trigger error event', async (t) => {
+  const eventHandler = sinon.spy();
+
+  const error = new Error('foo');
+
+  const planton = createPlanton({
+    getActiveTaskInstructions: () => {
+      return [];
+    },
+    tasks: [
+      {
+        delay: () => {
+          return 50;
+        },
+        name: 'foo',
+        schedule: async () => {
+          throw error;
+
+          return [];
+        },
+      },
+    ],
+  });
+
+  planton.events.on('error', eventHandler);
+
+  await delay(140);
+
+  // Ensures that we do not stop calling scheduler after the first error.
+  // Ensures that even after error we use the same delay.
+  t.is(eventHandler.callCount, 3);
+
+  t.deepEqual(eventHandler.firstCall.firstArg, {
+    error,
+    taskName: 'foo',
+  });
+
+  t.true(true);
+});
