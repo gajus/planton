@@ -541,3 +541,52 @@ test('high-frequency issues do not block other tasks', async (t) => {
   t.true(foo.callCount > 2);
   t.true(bar.callCount > 2);
 });
+
+test('scheduler executions are evenly distributed', async (t) => {
+  const foo = sinon
+    .stub()
+    .returns([]);
+
+  const bar = sinon
+    .stub()
+    .returns([]);
+
+  const baz = sinon
+    .stub()
+    .returns([]);
+
+  const planton = createPlanton({
+    getActiveTaskInstructions: () => {
+      return [];
+    },
+    tasks: [
+      {
+        delay: () => {
+          return 5;
+        },
+        name: 'foo',
+        schedule: foo,
+      },
+      {
+        delay: () => {
+          return 5;
+        },
+        name: 'bar',
+        schedule: bar,
+      },
+      {
+        delay: () => {
+          return 5;
+        },
+        name: 'baz',
+        schedule: baz,
+      },
+    ],
+  });
+
+  await delay(100);
+
+  t.true(Math.abs(foo.callCount - bar.callCount) < 2);
+  t.true(Math.abs(bar.callCount - baz.callCount) < 2);
+  t.true(Math.abs(foo.callCount - baz.callCount) < 2);
+});
