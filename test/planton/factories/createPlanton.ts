@@ -32,6 +32,41 @@ test('schedules tasks at a interval', async (t) => {
   await planton.terminate();
 });
 
+test('throws if multiple tasks are registered with the same name', (t) => {
+  const error = t.throws(() => {
+    createPlanton({
+      getActiveTaskInstructions: () => {
+        return [];
+      },
+      tasks: [
+        {
+          delay: () => {
+            return 90;
+          },
+          name: 'foo',
+          schedule: async () => {
+            return [];
+          },
+        },
+        {
+          delay: () => {
+            return 90;
+          },
+          name: 'foo',
+          schedule: async () => {
+            return [];
+          },
+        },
+      ],
+    });
+  });
+
+  t.like(error, {
+    code: 'DUPLICATE_TASK_NAME',
+    duplicateTaskName: 'foo',
+  });
+});
+
 test('stops scheduling after Planton is terminated', async (t) => {
   const schedule = sinon
     .stub()

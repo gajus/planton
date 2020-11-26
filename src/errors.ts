@@ -14,6 +14,19 @@ export class UnexpectedStateError extends ExtendableError {
   }
 }
 
+export class DuplicateTaskNameError extends UnexpectedStateError {
+  duplicateTaskName: string;
+
+  constructor (duplicateTaskName: any) {
+    super(
+      'Task name is duplicate.',
+      'DUPLICATE_TASK_NAME',
+    );
+
+    this.duplicateTaskName = duplicateTaskName;
+  }
+}
+
 export class UnexpectedTaskInstructionsError extends UnexpectedStateError {
   unexpectedTaskInstructions: any;
 

@@ -4,6 +4,7 @@ import {
 } from 'serialize-error';
 import Logger from '../Logger';
 import {
+  DuplicateTaskNameError,
   UnexpectedTaskInstructionsError,
 } from '../errors';
 import type {
@@ -82,6 +83,12 @@ const createPlanton = (configuration: PlantonConfigurationInput): Planton => {
 
   for (const inputTask of configuration.tasks) {
     log.debug('registered %s task', inputTask.name);
+
+    for (const existingTask of tasks) {
+      if (existingTask.name === inputTask.name) {
+        throw new DuplicateTaskNameError(existingTask.name);
+      }
+    }
 
     const calculateDelay = inputTask.delay || (() => {
       return 1_000;
