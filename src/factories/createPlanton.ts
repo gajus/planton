@@ -1,4 +1,7 @@
 import delay from 'delay';
+import {
+  serializeError,
+} from 'serialize-error';
 import Logger from '../Logger';
 import {
   UnexpectedTaskInstructionsError,
@@ -120,6 +123,11 @@ const createPlanton = (configuration: PlantonConfigurationInput): Planton => {
               limit: concurrency - activeTaskInstructions.length,
             });
           } catch (error) {
+            log.error({
+              error: serializeError(error),
+              taskName: task.name,
+            }, 'scheduler produced an error');
+
             events.emit('error', {
               error,
               taskName: task.name || '',
@@ -134,6 +142,11 @@ const createPlanton = (configuration: PlantonConfigurationInput): Planton => {
               taskName: task.name || '',
             });
 
+            log.error({
+              taskInstructions,
+              taskName: task.name,
+            }, 'scheduler produced an unexpected result; result is not array');
+
             taskInstructions = [];
           }
 
@@ -143,6 +156,11 @@ const createPlanton = (configuration: PlantonConfigurationInput): Planton => {
                 error: new UnexpectedTaskInstructionsError(taskInstructions),
                 taskName: task.name || '',
               });
+
+              log.error({
+                taskInstructions,
+                taskName: task.name,
+              }, 'scheduler produced an unexpected result; array members are not string');
 
               taskInstructions = [];
 
