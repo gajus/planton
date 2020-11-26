@@ -14,10 +14,10 @@ Database-agnostic task scheduler.
   * [Registering Schedulers](#registering-schedulers)
   * [Handling Events](#handling-events)
   * [Handling Errors](#handling-errors)
+  * [Executing Tasks](#executing-tasks)
   * [Inspecting Logs](#inspecting-logs)
 * [Example Usage](#example-usage)
 * [Example Database Schema](#example-database-schema)
-* [Executing Tasks](#executing-tasks)
 * [Alternatives](#alternatives)
 
 ## Motivation
@@ -144,6 +144,15 @@ Produced when task scheduler produces a result that is not an array or members o
 `unexpectedTaskInstructions` error property describes the offending instructions.
 
 Tip: [Inspect logs](#inspecting-logs) for additional details.
+
+### Executing Tasks
+
+Planton is only responsible for dispatching the job tasks, i.e. task execution is outside of the scope of this package.
+
+Use one the popular message queue systems:
+
+* [RabbitMQ](https://www.rabbitmq.com/)
+* [BullMQ](https://github.com/taskforcesh/bullmq)
 
 ### Inspecting Logs
 
@@ -281,15 +290,6 @@ REFERENCES public.maintenance_task(id)
 ON DELETE CASCADE;
 
 ```
-
-## Executing Tasks
-
-Planton is only responsible for dispatching the job tasks, i.e. task execution is outside of the scope of this package.
-
-Use one the popular message queue systems:
-
-* [RabbitMQ](https://www.rabbitmq.com/)
-* [BullMQ](https://github.com/taskforcesh/bullmq)
 
 ## Alternatives
 
