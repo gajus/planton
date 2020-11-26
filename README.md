@@ -304,5 +304,5 @@ Planton is designed to solve the problem of concurrency and task scheduling by p
 
 If you simply need to run tasks at a pre-defined time interval, then you may want to consider simpler alternatives such as the ones below.
 
-* [Agenda](https://github.com/agenda/agenda)
+* [node-cron](https://github.com/node-cron/node-cron)
 * [Skedule](https://github.com/shyiko/skedule)
