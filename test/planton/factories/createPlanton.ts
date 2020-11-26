@@ -405,7 +405,7 @@ test('unexpected scheduler result shape triggers an error (not array)', async (t
   t.is(eventHandler.callCount, 1);
 
   t.like(eventHandler.firstCall.firstArg.error, {
-    code: 'UNEXPECTED_TASK_INSTRUCTION_SHAPE',
+    code: 'UNEXPECTED_TASK_INSTRUCTIONS',
     unexpectedTaskInstructions: {
       foo: 'bar',
     },
@@ -446,7 +446,7 @@ test('unexpected scheduler result shape triggers an error (not an array of strin
   t.is(eventHandler.callCount, 1);
 
   t.like(eventHandler.firstCall.firstArg.error, {
-    code: 'UNEXPECTED_TASK_INSTRUCTION_SHAPE',
+    code: 'UNEXPECTED_TASK_INSTRUCTIONS',
     unexpectedTaskInstructions: [
       {
         foo: 'bar',

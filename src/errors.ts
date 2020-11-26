@@ -43,8 +43,8 @@ export class UnexpectedTaskInstructionsError extends UnexpectedStateError {
 
   constructor (unexpectedTaskInstructions: any) {
     super(
-      'Unexpected task instruction shape.',
-      'UNEXPECTED_TASK_INSTRUCTION_SHAPE',
+      'Unexpected task instructions.',
+      'UNEXPECTED_TASK_INSTRUCTIONS',
     );
 
     this.unexpectedTaskInstructions = unexpectedTaskInstructions;
