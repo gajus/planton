@@ -143,10 +143,12 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
 
           let taskInstructions: TaskInstruction[];
 
+          const limit = concurrency - activeTaskInstructions.length;
+
           try {
             taskInstructions = await inputTask.schedule({
               activeTaskInstructions,
-              limit: concurrency - activeTaskInstructions.length,
+              limit,
             });
           } catch (error) {
             log.error({
@@ -174,6 +176,22 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
             }, 'scheduler produced an unexpected result; result is not array');
 
             taskInstructions = [];
+          }
+
+          if (taskInstructions.length > limit) {
+            events.emit('error', {
+              error: new UnexpectedTaskInstructionsError(taskInstructions),
+              taskName: task.name || '',
+            });
+
+            log.error({
+              taskInstructions,
+              taskName: task.name,
+            }, 'scheduler produced an unexpected result; instruction number is greater than the limit');
+
+            taskInstructions = [];
+
+            break;
           }
 
           for (const taskInstruction of taskInstructions) {

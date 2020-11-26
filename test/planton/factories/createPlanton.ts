@@ -144,6 +144,7 @@ test('emits "task" event for every new task instruction', async (t) => {
     },
     tasks: [
       {
+        concurrency: 2,
         delay: () => {
           return 100;
         },
@@ -335,7 +336,7 @@ test('terminate waits for scheduling to complete', async (t) => {
   t.true(Date.now() - startTermination >= 500);
 });
 
-test('unhandled scheduler errors trigger error event', async (t) => {
+test('emits error if scheduler produces an error', async (t) => {
   const eventHandler = sinon.spy();
 
   const error = new Error('foo');
@@ -370,6 +371,47 @@ test('unhandled scheduler errors trigger error event', async (t) => {
   t.deepEqual(eventHandler.firstCall.firstArg, {
     error,
     taskName: 'foo',
+  });
+});
+
+test('emits error if scheduler produces more results than the supplied limit', async (t) => {
+  const eventHandler = sinon.spy();
+
+  const planton = createPlanton({
+    getActiveTaskInstructions: () => {
+      return [];
+    },
+    tasks: [
+      {
+        concurrency: 1,
+        delay: () => {
+          return 50;
+        },
+        name: 'foo',
+        schedule: async () => {
+          return [
+            '1',
+            '2',
+            '3',
+          ];
+        },
+      },
+    ],
+  });
+
+  planton.events.on('error', eventHandler);
+
+  await delay(40);
+
+  t.is(eventHandler.callCount, 1);
+
+  t.like(eventHandler.firstCall.firstArg.error, {
+    code: 'UNEXPECTED_TASK_INSTRUCTIONS',
+    unexpectedTaskInstructions: [
+      '1',
+      '2',
+      '3',
+    ],
   });
 });
 
