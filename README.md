@@ -18,6 +18,7 @@ Database-agnostic task scheduler.
 * [Example Usage](#example-usage)
 * [Example Database Schema](#example-database-schema)
 * [Executing Tasks](#executing-tasks)
+* [Alternatives](#alternatives)
 
 ## Motivation
 
@@ -289,3 +290,12 @@ Use one the popular message queue systems:
 
 * [RabbitMQ](https://www.rabbitmq.com/)
 * [BullMQ](https://github.com/taskforcesh/bullmq)
+
+## Alternatives
+
+Planton is designed to solve the problem of concurrency and task scheduling by polling the underlying database to identify if tasks need & can be scheduled.
+
+If you simply need to run tasks at a pre-defined time interval, then you may want to consider simpler alternatives such as the ones below.
+
+* [Agenda](https://github.com/agenda/agenda)
+* [Skedule](https://github.com/shyiko/skedule)
