@@ -16,6 +16,15 @@ export class UnexpectedStateError extends PlantonError {
   }
 }
 
+export class InvalidTaskConfigurationNameError extends UnexpectedStateError {
+  constructor (message: string) {
+    super(
+      message,
+      'INVALID_TASK_CONFIGURATION',
+    );
+  }
+}
+
 export class DuplicateTaskNameError extends UnexpectedStateError {
   duplicateTaskName: string;
 

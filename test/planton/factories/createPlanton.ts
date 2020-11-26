@@ -32,6 +32,33 @@ test('schedules tasks at a interval', async (t) => {
   await planton.terminate();
 });
 
+test('throws if concurrency is lower than 1', (t) => {
+  const error = t.throws(() => {
+    createPlanton({
+      getActiveTaskInstructions: () => {
+        return [];
+      },
+      tasks: [
+        {
+          concurrency: 0,
+          delay: () => {
+            return 90;
+          },
+          name: 'foo',
+          schedule: async () => {
+            return [];
+          },
+        },
+      ],
+    });
+  });
+
+  t.like(error, {
+    code: 'INVALID_TASK_CONFIGURATION',
+    message: 'Task concurrency must be greater than 0.',
+  });
+});
+
 test('throws if multiple tasks are registered with the same name', (t) => {
   const error = t.throws(() => {
     createPlanton({

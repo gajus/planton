@@ -5,6 +5,7 @@ import {
 import Logger from '../Logger';
 import {
   DuplicateTaskNameError,
+  InvalidTaskConfigurationNameError,
   UnexpectedTaskInstructionsError,
 } from '../errors';
 import type {
@@ -109,7 +110,11 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
       return 1_000;
     });
 
-    const concurrency = inputTask.concurrency || 1;
+    const concurrency = inputTask.concurrency === undefined ? 1 : inputTask.concurrency;
+
+    if (concurrency < 1) {
+      throw new InvalidTaskConfigurationNameError('Task concurrency must be greater than 0.');
+    }
 
     const task: Partial<InternalTask> = {
       attemptNumber: 0,

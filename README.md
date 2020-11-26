@@ -131,6 +131,10 @@ Produced when Planton is initiated with non-unique task names.
 
 `duplicateTaskName` error property describes the offending task name.
 
+#### `InvalidTaskConfigurationNameError`
+
+Produced when Planton is initiated with invalid configuration, e.g. `concurrency` value less than 1.
+
 #### `UnexpectedTaskInstructionsError`
 
 Produced when task scheduler produces a result that is not an array or members of array are not strings.
