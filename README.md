@@ -9,6 +9,8 @@
 Database-agnostic task scheduler.
 
 * [Motivation](#motivation)
+* [Usage](#usage)
+  * [Handling Events](#handling-events)
 * [Example Usage](#example-usage)
 * [Example Database Schema](#example-database-schema)
 * [Executing Tasks](#executing-tasks)
@@ -18,6 +20,45 @@ Database-agnostic task scheduler.
 In every project that I have undertaken, there was always a need to run a periodic task of some sorts, e.g. hard-delete after 14-day soft delete. Typically this problem is solved by using a CRON-like system that simply runs a task at a set interval. However, ad-hoc solutions are added as requirements evolve, e.g. the need to run a task at a different interval and concurrency depending on whether the last attempt at running the task was successful.
 
 Planton is a database-agnostic task scheduler for these type of tasks that abstracts logic for handling concurrency and different task scheduling strategies.
+
+## Usage
+
+### Handling Events
+
+`planton.events` is an instance of an event emitter.
+
+Planton emits 2 types of events:
+
+#### `task`
+
+Emitted for each result returned by the schedulers.
+
+```js
+planton.events.on('task', (taskEvent: TaskEvent) => {
+  // {
+  //   taskName: 'send_user_email',
+  //   instruction: 1,
+  // };
+  console.log(taskEvent);
+});
+
+```
+
+#### `error`
+
+Emitter for errors that happen during scheduling.
+
+```js
+planton.events.on('error', (errorEvent: ErrorEvent) => {
+  // {
+  //   taskName: 'send_user_email',
+  //   error: Error,
+  // };
+  console.log(errorEvent);
+});
+
+```
+
 
 ## Example Usage
 
@@ -158,39 +199,3 @@ Use one the popular message queue systems:
 
 * [RabbitMQ](https://www.rabbitmq.com/)
 * [BullMQ](https://github.com/taskforcesh/bullmq)
-
-## Handling events
-
-`planton.events` is an instance of an event emitter.
-
-Planton emits 2 types of events:
-
-### `task`
-
-Emitted for each result returned by the schedulers.
-
-```js
-planton.events.on('task', (taskEvent: TaskEvent) => {
-  // {
-  //   taskName: 'send_user_email',
-  //   instruction: 1,
-  // };
-  console.log(taskEvent);
-});
-
-```
-
-### `error`
-
-Emitter for errors that happen during scheduling.
-
-```js
-planton.events.on('error', (errorEvent: ErrorEvent) => {
-  // {
-  //   taskName: 'send_user_email',
-  //   error: Error,
-  // };
-  console.log(errorEvent);
-});
-
-```
