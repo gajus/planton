@@ -32,7 +32,7 @@ test('schedules tasks at a interval', async (t) => {
   await planton.terminate();
 });
 
-test('stops scheduleing after Planton is terminated', async (t) => {
+test('stops scheduling after Planton is terminated', async (t) => {
   const schedule = sinon
     .stub()
     .onFirstCall()
@@ -246,7 +246,7 @@ test('invokes delay with the number of attempts since last schedule that produce
   await planton.terminate();
 });
 
-test('terminate waits for scheduleing to complete', async (t) => {
+test('terminate waits for scheduling to complete', async (t) => {
   const planton = createPlanton({
     getActiveTaskInstructions: () => {
       return [];
