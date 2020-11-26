@@ -41,7 +41,6 @@ type Delay = (attemptNumber: number) => number;
 
 type TaskInput = {
   readonly concurrency?: number;
-  readonly exclusive?: boolean;
   readonly delay?: Delay;
   readonly name: string;
   readonly schedule: Schedule;
@@ -56,7 +55,6 @@ type InternalTask = {
   attemptNumber: number;
 
   readonly concurrency: number;
-  readonly exclusive: boolean;
   readonly name: string;
   readonly schedule: Schedule;
   readonly terminate: () => void;
@@ -99,7 +97,6 @@ const createPlanton = (configuration: PlantonConfigurationInput): Planton => {
     const task: Partial<InternalTask> = {
       attemptNumber: 0,
       concurrency,
-      exclusive: inputTask.exclusive !== false,
       name: inputTask.name,
       schedule: inputTask.schedule,
     };
