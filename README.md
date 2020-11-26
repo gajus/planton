@@ -18,6 +18,7 @@ Database-agnostic task scheduler.
   * [Inspecting Logs](#inspecting-logs)
 * [Example Usage](#example-usage)
 * [Example Database Schema](#example-database-schema)
+* [Limitations](#limitations)
 * [Alternatives](#alternatives)
 
 ## Motivation
@@ -290,6 +291,12 @@ REFERENCES public.maintenance_task(id)
 ON DELETE CASCADE;
 
 ```
+
+## Limitations
+
+Planton is only aware of scheduling instructions produced by `delay` function. This (may) make Planton unsuitable for horizontal scaling, e.g. consider a scenario where you want to execute a function _at most_ once every 5 minutes, and executing it more often would produce undesirable side-effects. For use cases such as these, you may want to consider the [alternatives](#alternatives).
+
+However, for many use cases the above limitation shouldn't be an issue. As illustrated in an [example implementation](#example-usage), using row locking when polling tasks ensures that you do not schedule the same tasks, meanwhile `limit` in combination with `activeTaskInstructions` reenforce the exclusivity constraint and limit concurrency.
 
 ## Alternatives
 
