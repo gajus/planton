@@ -4,7 +4,9 @@
 
 import ExtendableError from 'es6-error';
 
-export class UnexpectedStateError extends ExtendableError {
+export class PlantonError extends ExtendableError {}
+
+export class UnexpectedStateError extends PlantonError {
   code: string;
 
   constructor (message: string, code = 'UNEXPECTED_STATE_ERROR') {

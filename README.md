@@ -11,6 +11,7 @@ Database-agnostic task scheduler.
 * [Motivation](#motivation)
 * [Usage](#usage)
   * [Handling Events](#handling-events)
+  * [Handling Errors](#handling-errors)
 * [Example Usage](#example-usage)
 * [Example Database Schema](#example-database-schema)
 * [Executing Tasks](#executing-tasks)
@@ -46,7 +47,7 @@ planton.events.on('task', (taskEvent: TaskEvent) => {
 
 #### `error`
 
-Emitter for errors that happen during scheduling.
+Emitted for errors that happen during scheduling.
 
 ```js
 planton.events.on('error', (errorEvent: ErrorEvent) => {
@@ -59,6 +60,23 @@ planton.events.on('error', (errorEvent: ErrorEvent) => {
 
 ```
 
+### Handling Errors
+
+All Planton errors extend from `PlantonError`.
+
+Planton produces 2 types of errors:
+
+#### `DuplicateTaskNameError`
+
+Produced when Planton is initiated with non-unique task names.
+
+`duplicateTaskName` error property describes the offending task name.
+
+#### `UnexpectedTaskInstructionsError`
+
+Produced when task scheduler produces a result that is not an array or members of array are not strings.
+
+`unexpectedTaskInstructions` error property describes the offending instructions.
 
 ## Example Usage
 
