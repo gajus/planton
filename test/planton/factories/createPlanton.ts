@@ -311,6 +311,88 @@ test('unhandled scheduler errors trigger error event', async (t) => {
   });
 });
 
+test('unexpected scheduler result shape triggers an error (not array)', async (t) => {
+  const eventHandler = sinon.spy();
+
+  const planton = createPlanton({
+    getActiveTaskInstructions: () => {
+      return [];
+    },
+    tasks: [
+      {
+        delay: () => {
+          return 50;
+        },
+        name: 'foo',
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        schedule: async () => {
+          return {
+            foo: 'bar',
+          };
+        },
+      },
+    ],
+  });
+
+  planton.events.on('error', eventHandler);
+
+  await delay(40);
+
+  t.is(eventHandler.callCount, 1);
+
+  t.like(eventHandler.firstCall.firstArg.error, {
+    code: 'UNEXPECTED_TASK_INSTRUCTION_SHAPE',
+    unexpectedTaskInstructions: {
+      foo: 'bar',
+    },
+  });
+});
+
+test('unexpected scheduler result shape triggers an error (not an array of string literals)', async (t) => {
+  const eventHandler = sinon.spy();
+
+  const planton = createPlanton({
+    getActiveTaskInstructions: () => {
+      return [];
+    },
+    tasks: [
+      {
+        delay: () => {
+          return 50;
+        },
+        name: 'foo',
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        schedule: async () => {
+          return [
+            {
+              foo: 'bar',
+            },
+          ];
+        },
+      },
+    ],
+  });
+
+  planton.events.on('error', eventHandler);
+
+  await delay(40);
+
+  t.is(eventHandler.callCount, 1);
+
+  t.like(eventHandler.firstCall.firstArg.error, {
+    code: 'UNEXPECTED_TASK_INSTRUCTION_SHAPE',
+    unexpectedTaskInstructions: [
+      {
+        foo: 'bar',
+      },
+    ],
+  });
+});
+
 test('high-frequency issues do not block other tasks', async (t) => {
   const foo = sinon
     .stub()

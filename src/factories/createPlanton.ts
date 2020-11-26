@@ -1,5 +1,8 @@
 import delay from 'delay';
 import Logger from '../Logger';
+import {
+  UnexpectedTaskInstructionsError,
+} from '../errors';
 import type {
   Emitter,
 } from '../types';
@@ -123,6 +126,28 @@ const createPlanton = (configuration: PlantonConfigurationInput): Planton => {
             });
 
             taskInstructions = [];
+          }
+
+          if (!Array.isArray(taskInstructions)) {
+            events.emit('error', {
+              error: new UnexpectedTaskInstructionsError(taskInstructions),
+              taskName: task.name || '',
+            });
+
+            taskInstructions = [];
+          }
+
+          for (const taskInstruction of taskInstructions) {
+            if (typeof taskInstruction !== 'string') {
+              events.emit('error', {
+                error: new UnexpectedTaskInstructionsError(taskInstructions),
+                taskName: task.name || '',
+              });
+
+              taskInstructions = [];
+
+              break;
+            }
           }
 
           if (taskInstructions.length > 0) {

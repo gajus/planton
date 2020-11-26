@@ -18,6 +18,7 @@
   "dependencies": {
     "@types/roarr": "^2.14.2",
     "@types/set-interval-async": "^1.0.0",
+    "es6-error": "^4.1.1",
     "roarr": "^2.15.4"
   },
   "description": "Database-agnostic task scheduler.",
