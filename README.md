@@ -11,6 +11,7 @@ Database-agnostic task scheduler.
 * [Motivation](#motivation)
 * [API](#api)
 * [Usage](#usage)
+  * [Registering Schedulers](#registering-schedulers)
   * [Handling Events](#handling-events)
   * [Handling Errors](#handling-errors)
 * [Example Usage](#example-usage)
@@ -73,6 +74,14 @@ createPlanton(configuration: PlantonConfigurationInput): Planton;
 ```
 
 ## Usage
+
+### Registering Schedulers
+
+Planton schedulers are functions that upon invocation produce an array of instructions.
+
+Planton schedulers are invoked at an interval no greater than the instructions produced by `delay` function.
+
+Schedulers are registered when constructing a Planton instance (see [Example Usage](#example-usage)). New schedulers cannot be registered after Planton has been initiated.
 
 ### Handling Events
 
