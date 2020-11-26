@@ -309,6 +309,49 @@ test('unhandled scheduler errors trigger error event', async (t) => {
     error,
     taskName: 'foo',
   });
+});
 
-  t.true(true);
+test('high-frequency issues do not block other tasks', async (t) => {
+  const foo = sinon
+    .stub()
+    .callsFake(async () => {
+      await delay(10);
+
+      return [];
+    });
+
+  const bar = sinon
+    .stub()
+    .callsFake(async () => {
+      await delay(10);
+
+      return [];
+    });
+
+  const planton = createPlanton({
+    getActiveTaskInstructions: () => {
+      return [];
+    },
+    tasks: [
+      {
+        delay: () => {
+          return 5;
+        },
+        name: 'foo',
+        schedule: foo,
+      },
+      {
+        delay: () => {
+          return 50;
+        },
+        name: 'bar',
+        schedule: bar,
+      },
+    ],
+  });
+
+  await delay(140);
+
+  t.true(foo.callCount > 2);
+  t.true(bar.callCount > 2);
 });
