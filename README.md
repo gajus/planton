@@ -14,6 +14,7 @@ Database-agnostic task scheduler.
   * [Registering Schedulers](#registering-schedulers)
   * [Handling Events](#handling-events)
   * [Handling Errors](#handling-errors)
+  * [Inspecting Logs](#inspecting-logs)
 * [Example Usage](#example-usage)
 * [Example Database Schema](#example-database-schema)
 * [Executing Tasks](#executing-tasks)
@@ -140,6 +141,14 @@ Produced when Planton is initiated with invalid configuration, e.g. `concurrency
 Produced when task scheduler produces a result that is not an array or members of array are not strings.
 
 `unexpectedTaskInstructions` error property describes the offending instructions.
+
+Tip: [Inspect logs](#inspecting-logs) for additional details.
+
+### Inspecting Logs
+
+Planton uses [roarr](https://github.com/gajus/roarr) to produce logs.
+
+To enable logging, define `ROARR_LOG=true` environment variable.
 
 ## Example Usage
 
