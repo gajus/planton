@@ -206,8 +206,6 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
             }, 'scheduler produced an unexpected result; instruction number is greater than the limit');
 
             taskInstructions = [];
-
-            break;
           }
 
           for (const taskInstruction of taskInstructions) {

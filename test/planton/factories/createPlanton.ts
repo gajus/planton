@@ -625,7 +625,7 @@ test('continues to attempt scheduling tasks that breach concurrency', async (t) 
 });
 
 test('continues to attempt scheduling tasks that produce invalid instructions (not array)', async (t) => {
-  const errorHandler = sinon.stub();
+  const eventHandler = sinon.stub();
 
   const getActiveTaskInstructions = sinon
     .stub()
@@ -650,11 +650,11 @@ test('continues to attempt scheduling tasks that produce invalid instructions (n
     ],
   });
 
-  planton.events.on('error', errorHandler);
+  planton.events.on('error', eventHandler);
 
   await delay(100);
 
-  t.is(errorHandler.called, true);
+  t.is(eventHandler.called, true);
 
   t.true(getActiveTaskInstructions.callCount > 3);
 
@@ -662,7 +662,7 @@ test('continues to attempt scheduling tasks that produce invalid instructions (n
 });
 
 test('continues to attempt scheduling tasks that produce invalid instructions (not an array of string literals)', async (t) => {
-  const errorHandler = sinon.stub();
+  const eventHandler = sinon.stub();
 
   const getActiveTaskInstructions = sinon
     .stub()
@@ -689,11 +689,49 @@ test('continues to attempt scheduling tasks that produce invalid instructions (n
     ],
   });
 
-  planton.events.on('error', errorHandler);
+  planton.events.on('error', eventHandler);
 
   await delay(100);
 
-  t.is(errorHandler.called, true);
+  t.is(eventHandler.called, true);
+
+  t.true(getActiveTaskInstructions.callCount > 3);
+
+  await planton.terminate();
+});
+
+test('continues to attempt scheduling tasks that produce more instructions than the supplied limit', async (t) => {
+  const eventHandler = sinon.spy();
+
+  const getActiveTaskInstructions = sinon
+    .stub()
+    .returns([]);
+
+  const planton = createPlanton({
+    getActiveTaskInstructions,
+    tasks: [
+      {
+        concurrency: 1,
+        delay: () => {
+          return 10;
+        },
+        name: 'foo',
+        schedule: async () => {
+          return [
+            '1',
+            '2',
+            '3',
+          ];
+        },
+      },
+    ],
+  });
+
+  planton.events.on('error', eventHandler);
+
+  await delay(90);
+
+  t.is(eventHandler.called, true);
 
   t.true(getActiveTaskInstructions.callCount > 3);
 
