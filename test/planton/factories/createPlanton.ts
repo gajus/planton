@@ -375,6 +375,8 @@ test('emits error if scheduler produces an error', async (t) => {
     error,
     taskName: 'foo',
   });
+
+  await planton.terminate();
 });
 
 test('emits error if scheduler produces more results than the supplied limit', async (t) => {
@@ -416,6 +418,8 @@ test('emits error if scheduler produces more results than the supplied limit', a
       '3',
     ],
   });
+
+  await planton.terminate();
 });
 
 test('unexpected scheduler result shape triggers an error (not array)', async (t) => {
@@ -455,6 +459,8 @@ test('unexpected scheduler result shape triggers an error (not array)', async (t
       foo: 'bar',
     },
   });
+
+  await planton.terminate();
 });
 
 test('unexpected scheduler result shape triggers an error (not an array of string literals)', async (t) => {
@@ -498,6 +504,8 @@ test('unexpected scheduler result shape triggers an error (not an array of strin
       },
     ],
   });
+
+  await planton.terminate();
 });
 
 test('high-frequency issues do not block other tasks', async (t) => {
@@ -543,6 +551,8 @@ test('high-frequency issues do not block other tasks', async (t) => {
 
   t.true(foo.callCount > 2);
   t.true(bar.callCount > 2);
+
+  await planton.terminate();
 });
 
 test('scheduler executions are evenly distributed', async (t) => {
