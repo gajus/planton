@@ -1,4 +1,6 @@
 import delay from 'delay';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import Deferred from 'promise-deferred';
 import {
   serializeError,
