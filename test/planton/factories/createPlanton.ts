@@ -27,7 +27,7 @@ test('schedules tasks at a interval', async (t) => {
 
   await delay(900);
 
-  t.is(schedule.callCount, 10);
+  t.is(schedule.callCount, 9);
 
   await planton.terminate();
 });
@@ -117,13 +117,13 @@ test('stops scheduling after Planton is terminated', async (t) => {
     ],
   });
 
-  await delay(50);
+  await delay(250);
 
   t.is(schedule.callCount, 1);
 
   await planton.terminate();
 
-  await delay(300);
+  await delay(200);
 
   t.is(schedule.callCount, 1);
 });
@@ -156,7 +156,7 @@ test('emits "task" event for every new task instruction', async (t) => {
 
   planton.events.on('task', eventHandler);
 
-  await delay(50);
+  await delay(150);
 
   t.is(eventHandler.callCount, 2);
   t.deepEqual(eventHandler.firstCall.firstArg, {
@@ -231,7 +231,7 @@ test('invokes schedule with the limit adjusted based on the number of current ac
     ],
   });
 
-  await delay(50);
+  await delay(150);
 
   t.is(schedule.callCount, 1);
   t.is(schedule.firstCall.firstArg.limit, 1);
@@ -263,7 +263,7 @@ test('invokes schedule with the current active task instructions', async (t) => 
     ],
   });
 
-  await delay(50);
+  await delay(150);
 
   t.is(schedule.callCount, 1);
   t.deepEqual(schedule.firstCall.firstArg.activeTaskInstructions, [
@@ -274,7 +274,7 @@ test('invokes schedule with the current active task instructions', async (t) => 
   await planton.terminate();
 });
 
-test('invokes delay with the number of attempts since last schedule that produced results', async (t) => {
+test('invokes `delay` with the number of attempts since the last time `schedule` produced results', async (t) => {
   const schedule = sinon
     .stub()
     .onFirstCall()
@@ -299,12 +299,13 @@ test('invokes delay with the number of attempts since last schedule that produce
     ],
   });
 
-  await delay(100);
+  await delay(150);
 
   t.is(schedule.callCount, 2);
 
-  t.is(calculateDelay.firstCall.firstArg, 1);
-  t.is(calculateDelay.secondCall.firstArg, 0);
+  t.is(calculateDelay.firstCall.firstArg, 0);
+  t.is(calculateDelay.secondCall.firstArg, 1);
+  t.is(calculateDelay.thirdCall.firstArg, 0);
 
   await planton.terminate();
 });
@@ -328,6 +329,8 @@ test('terminate waits for scheduling to complete', async (t) => {
       },
     ],
   });
+
+  await delay(50);
 
   const startTermination = Date.now();
 
@@ -362,7 +365,7 @@ test('emits error if scheduler produces an error', async (t) => {
 
   planton.events.on('error', eventHandler);
 
-  await delay(140);
+  await delay(190);
 
   // Ensures that we do not stop calling scheduler after the first error.
   // Ensures that even after error we use the same delay.
@@ -401,7 +404,7 @@ test('emits error if scheduler produces more results than the supplied limit', a
 
   planton.events.on('error', eventHandler);
 
-  await delay(40);
+  await delay(90);
 
   t.is(eventHandler.callCount, 1);
 
@@ -442,7 +445,7 @@ test('unexpected scheduler result shape triggers an error (not array)', async (t
 
   planton.events.on('error', eventHandler);
 
-  await delay(40);
+  await delay(90);
 
   t.is(eventHandler.callCount, 1);
 
@@ -483,7 +486,7 @@ test('unexpected scheduler result shape triggers an error (not an array of strin
 
   planton.events.on('error', eventHandler);
 
-  await delay(40);
+  await delay(90);
 
   t.is(eventHandler.callCount, 1);
 
@@ -536,7 +539,7 @@ test('high-frequency issues do not block other tasks', async (t) => {
     ],
   });
 
-  await delay(140);
+  await delay(190);
 
   t.true(foo.callCount > 2);
   t.true(bar.callCount > 2);
@@ -589,4 +592,6 @@ test('scheduler executions are evenly distributed', async (t) => {
   t.true(Math.abs(foo.callCount - bar.callCount) < 2);
   t.true(Math.abs(bar.callCount - baz.callCount) < 2);
   t.true(Math.abs(foo.callCount - baz.callCount) < 2);
+
+  await planton.terminate();
 });

@@ -137,6 +137,16 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
       (async () => {
         // eslint-disable-next-line no-unmodified-loop-condition
         while (active) {
+          const calculatedDelay = calculateDelay(task.attemptNumber || 0);
+
+          if (calculatedDelay) {
+            await delay(calculatedDelay);
+          }
+
+          if (!active) {
+            break;
+          }
+
           const activeTaskInstructions = await getActiveTaskInstructions(inputTask.name);
 
           if (activeTaskInstructions.length >= concurrency) {
@@ -229,12 +239,6 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
             }
           } else if (task.attemptNumber !== undefined) {
             task.attemptNumber++;
-          }
-
-          const calculatedDelay = calculateDelay(task.attemptNumber || 0);
-
-          if (calculatedDelay) {
-            await delay(calculatedDelay);
           }
 
           if (!active) {
