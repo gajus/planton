@@ -25,20 +25,20 @@
   "description": "Database-agnostic task scheduler.",
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@types/sinon": "^9.0.8",
+    "@types/sinon": "^9.0.9",
     "ava": "^3.13.0",
     "coveralls": "^3.1.0",
     "del-cli": "^3.0.1",
     "delay": "^4.4.0",
-    "eslint": "^7.13.0",
-    "eslint-config-canonical": "^24.4.3",
+    "eslint": "^7.14.0",
+    "eslint-config-canonical": "^24.4.4",
     "husky": "^4.3.0",
-    "lint-staged": "^10.5.1",
+    "lint-staged": "^10.5.2",
     "nyc": "^15.1.0",
-    "semantic-release": "^17.2.2",
+    "semantic-release": "^17.3.0",
     "sinon": "^9.2.1",
-    "ts-node": "^9.0.0",
-    "typescript": "^4.0.5"
+    "ts-node": "^9.1.0",
+    "typescript": "^4.1.2"
   },
   "engines": {
     "node": ">=10"
