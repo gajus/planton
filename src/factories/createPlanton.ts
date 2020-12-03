@@ -4,6 +4,7 @@ import {
 } from 'serialize-error';
 import Logger from '../Logger';
 import {
+  UnexpectedStateError,
   DuplicateTaskNameError,
   InvalidTaskConfigurationNameError,
   UnexpectedTaskInstructionsError,
@@ -145,6 +146,10 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
           let taskInstructions: TaskInstruction[];
 
           const limit = concurrency - activeTaskInstructions.length;
+
+          if (limit < 1) {
+            throw new UnexpectedStateError('Limit cannot be less than 1.');
+          }
 
           try {
             taskInstructions = await inputTask.schedule({
