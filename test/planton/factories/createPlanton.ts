@@ -623,3 +623,79 @@ test('continues to attempt scheduling tasks that breach concurrency', async (t) 
 
   await planton.terminate();
 });
+
+test('continues to attempt scheduling tasks that produce invalid instructions (not array)', async (t) => {
+  const errorHandler = sinon.stub();
+
+  const getActiveTaskInstructions = sinon
+    .stub()
+    .returns([]);
+
+  const planton = createPlanton({
+    getActiveTaskInstructions,
+    tasks: [
+      {
+        delay: () => {
+          return 10;
+        },
+        name: 'foo',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        schedule: () => {
+          return {
+            foo: 'bar',
+          };
+        },
+      },
+    ],
+  });
+
+  planton.events.on('error', errorHandler);
+
+  await delay(100);
+
+  t.is(errorHandler.called, true);
+
+  t.true(getActiveTaskInstructions.callCount > 3);
+
+  await planton.terminate();
+});
+
+test('continues to attempt scheduling tasks that produce invalid instructions (not an array of string literals)', async (t) => {
+  const errorHandler = sinon.stub();
+
+  const getActiveTaskInstructions = sinon
+    .stub()
+    .returns([]);
+
+  const planton = createPlanton({
+    getActiveTaskInstructions,
+    tasks: [
+      {
+        delay: () => {
+          return 10;
+        },
+        name: 'foo',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        schedule: () => {
+          return [
+            {
+              foo: 'bar',
+            },
+          ];
+        },
+      },
+    ],
+  });
+
+  planton.events.on('error', errorHandler);
+
+  await delay(100);
+
+  t.is(errorHandler.called, true);
+
+  t.true(getActiveTaskInstructions.callCount > 3);
+
+  await planton.terminate();
+});
