@@ -595,3 +595,31 @@ test('scheduler executions are evenly distributed', async (t) => {
 
   await planton.terminate();
 });
+
+test('continues to attempt scheduling tasks that breach concurrency', async (t) => {
+  const getActiveTaskInstructions = sinon
+    .stub()
+    .returns(['1']);
+
+  const planton = createPlanton({
+    getActiveTaskInstructions,
+    tasks: [
+      {
+        concurrency: 1,
+        delay: () => {
+          return 10;
+        },
+        name: 'foo',
+        schedule: () => {
+          throw new Error('Should not be called.');
+        },
+      },
+    ],
+  });
+
+  await delay(100);
+
+  t.true(getActiveTaskInstructions.callCount > 3);
+
+  await planton.terminate();
+});

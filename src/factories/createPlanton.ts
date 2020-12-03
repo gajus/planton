@@ -150,7 +150,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
           const activeTaskInstructions = await getActiveTaskInstructions(inputTask.name);
 
           if (activeTaskInstructions.length >= concurrency) {
-            break;
+            continue;
           }
 
           let taskInstructions: TaskInstruction[];
