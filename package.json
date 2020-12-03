@@ -19,6 +19,7 @@
     "@types/roarr": "^2.14.2",
     "@types/set-interval-async": "^1.0.0",
     "es6-error": "^4.1.1",
+    "promise-deferred": "^2.0.3",
     "roarr": "^2.15.4",
     "serialize-error": "^7.0.1"
   },

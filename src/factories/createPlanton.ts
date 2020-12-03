@@ -1,4 +1,5 @@
 import delay from 'delay';
+import Deferred from 'promise-deferred';
 import {
   serializeError,
 } from 'serialize-error';
@@ -125,11 +126,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
     };
 
     const terminate = (() => {
-      let resolveTermination;
-
-      const terminationPromise = new Promise((resolve) => {
-        resolveTermination = resolve;
-      });
+      const deferredTermination = new Deferred();
 
       let active = true;
 
@@ -244,15 +241,13 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
           }
         }
 
-        if (resolveTermination) {
-          resolveTermination();
-        }
+        deferredTermination.resolve();
       })();
 
       return () => {
         active = false;
 
-        return terminationPromise;
+        return deferredTermination.promise;
       };
     })();
 
