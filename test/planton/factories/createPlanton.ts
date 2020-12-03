@@ -128,6 +128,33 @@ test('stops scheduling after Planton is terminated', async (t) => {
   t.is(schedule.callCount, 1);
 });
 
+test('cancels delay when Planton is terminated', async (t) => {
+  t.timeout(100);
+
+  const schedule = sinon
+    .stub()
+    .throws();
+
+  const planton = createPlanton({
+    getActiveTaskInstructions: () => {
+      return [];
+    },
+    tasks: [
+      {
+        delay: () => {
+          return 500;
+        },
+        name: 'foo',
+        schedule,
+      },
+    ],
+  });
+
+  await delay(50);
+
+  await t.notThrowsAsync(planton.terminate());
+});
+
 test('emits "task" event for every new task instruction', async (t) => {
   const schedule = sinon
     .stub()

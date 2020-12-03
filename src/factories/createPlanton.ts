@@ -126,6 +126,8 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
     };
 
     const terminate = (() => {
+      let delayPromise: any;
+
       const deferredTermination = new Deferred();
 
       let active = true;
@@ -137,7 +139,9 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
           const calculatedDelay = calculateDelay(task.attemptNumber || 0);
 
           if (calculatedDelay) {
-            await delay(calculatedDelay);
+            delayPromise = delay(calculatedDelay);
+
+            await delayPromise;
           }
 
           if (!active) {
@@ -246,6 +250,10 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
 
       return () => {
         active = false;
+
+        if (delayPromise) {
+          delayPromise.clear();
+        }
 
         return deferredTermination.promise;
       };
