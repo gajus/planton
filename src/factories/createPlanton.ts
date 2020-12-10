@@ -37,7 +37,7 @@ type ErrorEvent = {
 
 /**
  * @property activeTaskInstructions A list of active task instructions as retrieved using `getActiveTaskInstructions`.
- * @property concurrency Concurrency setting value.
+ * @property concurrency The current concurrency setting value.
  * @property limit A limit derived based on the value of `concurrency` and the number of `activeTaskInstructions` (CONCURRENCY - ACTIVE TASK INSTRUCTIONS = LIMIT).
  */
 type ScheduleConfiguration = {
