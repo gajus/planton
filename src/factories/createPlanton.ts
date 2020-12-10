@@ -166,6 +166,10 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
             throw new UnexpectedStateError('Limit cannot be less than 0.');
           }
 
+          if (!Number.isInteger(limit)) {
+            throw new UnexpectedStateError('Limit must be an integer.');
+          }
+
           try {
             taskInstructions = await inputTask.schedule({
               activeTaskInstructions,
