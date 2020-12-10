@@ -57,11 +57,17 @@ type Schedule = (configuration: ScheduleConfiguration) => Promise<TaskInstructio
 type CalculateDelay = (attemptNumber: number) => Promise<number> | number;
 
 /**
+ * Produces a number indicating how many tasks can be scheduled at most.
+ */
+type CalculateLimit = (concurrency: number, activeTaskInstructions: TaskInstruction[]) => Promise<number> | number;
+
+/**
  * @property concurrency Together with `getActiveTaskInstructions`, the `concurrency` setting is used to generate `limit` value that is passed to task scheduler.
  * @property name A unique name of the task. Used to identify task scheduler in errors and for tracking active task instructions (see `getActiveTaskInstructions`).
  */
 type TaskInput = {
   readonly calculateDelay?: CalculateDelay;
+  readonly calculateLimit?: CalculateLimit;
   readonly concurrency?: number;
   readonly name: string;
   readonly schedule: Schedule;
@@ -98,6 +104,10 @@ const defaultCalculateDelay: CalculateDelay = () => {
   return 1_000;
 };
 
+const defaultCalculateLimit: CalculateLimit = (concurrency, activeTaskInstructions) => {
+  return concurrency - activeTaskInstructions.length;
+};
+
 const createPlanton = (configuration: PlantonConfiguration): Planton => {
   const {
     getActiveTaskInstructions,
@@ -117,6 +127,8 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
     }
 
     const calculateDelay = inputTask.calculateDelay || defaultCalculateDelay;
+
+    const calculateLimit = inputTask.calculateLimit || defaultCalculateLimit;
 
     const concurrency = inputTask.concurrency === undefined ? 1 : inputTask.concurrency;
 
@@ -168,14 +180,43 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
 
           let taskInstructions: TaskInstruction[];
 
-          const limit = concurrency - activeTaskInstructions.length;
+          const limit = await calculateLimit(
+            concurrency,
+            activeTaskInstructions,
+          );
 
           if (limit < 0) {
-            throw new UnexpectedStateError('Limit cannot be less than 0.');
+            const error = new UnexpectedStateError('Limit must be greater than 0.');
+
+            log.error({
+              error: serializeError(error),
+              limit,
+              taskName,
+            }, 'calculateLimit an unexpected result; limit must be greater than 0');
+
+            events.emit('error', {
+              error,
+              taskName,
+            });
+
+            continue;
           }
 
           if (!Number.isInteger(limit)) {
-            throw new UnexpectedStateError('Limit must be an integer.');
+            const error = new UnexpectedStateError('Limit must be an integer.');
+
+            log.error({
+              error: serializeError(error),
+              limit,
+              taskName,
+            }, 'calculateLimit an unexpected result; limit must be an integer');
+
+            events.emit('error', {
+              error,
+              taskName,
+            });
+
+            continue;
           }
 
           try {

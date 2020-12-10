@@ -56,11 +56,17 @@ type Schedule = (configuration: ScheduleConfiguration) => Promise<TaskInstructio
 type CalculateDelay = (attemptNumber: number) => Promise<number> | number;
 
 /**
+ * Produces a number indicating how many tasks can be scheduled at most.
+ */
+type CalculateLimit = (concurrency: number, activeTaskInstructions: TaskInstruction[]) => Promise<number> | number;
+
+/**
  * @property concurrency Together with `getActiveTaskInstructions`, the `concurrency` setting is used to generate `limit` value that is passed to task scheduler.
  * @property name A unique name of the task. Used to identify task scheduler in errors and for tracking active task instructions (see `getActiveTaskInstructions`).
  */
 type TaskInput = {
   readonly calculateDelay?: CalculateDelay;
+  readonly calculateLimit?: CalculateLimit;
   readonly concurrency?: number;
   readonly name: string;
   readonly schedule: Schedule;

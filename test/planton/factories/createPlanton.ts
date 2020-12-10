@@ -449,6 +449,82 @@ test('emits error if scheduler produces more results than the supplied limit', a
   await planton.terminate();
 });
 
+test('emits error if `calculateLimit` produces less than 0', async (t) => {
+  const eventHandler = sinon.spy();
+
+  const planton = createPlanton({
+    getActiveTaskInstructions: () => {
+      return [];
+    },
+    tasks: [
+      {
+        calculateDelay: () => {
+          return 50;
+        },
+        calculateLimit: () => {
+          return -1;
+        },
+        concurrency: 1,
+        name: 'foo',
+        schedule: async () => {
+          return [];
+        },
+      },
+    ],
+  });
+
+  planton.events.on('error', eventHandler);
+
+  await delay(90);
+
+  t.is(eventHandler.callCount, 1);
+
+  t.like(eventHandler.firstCall.firstArg.error, {
+    code: 'UNEXPECTED_STATE_ERROR',
+    message: 'Limit must be greater than 0.',
+  });
+
+  await planton.terminate();
+});
+
+test('emits error if `calculateLimit` does not produce an integer', async (t) => {
+  const eventHandler = sinon.spy();
+
+  const planton = createPlanton({
+    getActiveTaskInstructions: () => {
+      return [];
+    },
+    tasks: [
+      {
+        calculateDelay: () => {
+          return 50;
+        },
+        calculateLimit: () => {
+          return 1.5;
+        },
+        concurrency: 1,
+        name: 'foo',
+        schedule: async () => {
+          return [];
+        },
+      },
+    ],
+  });
+
+  planton.events.on('error', eventHandler);
+
+  await delay(90);
+
+  t.is(eventHandler.callCount, 1);
+
+  t.like(eventHandler.firstCall.firstArg.error, {
+    code: 'UNEXPECTED_STATE_ERROR',
+    message: 'Limit must be an integer.',
+  });
+
+  await planton.terminate();
+});
+
 test('unexpected scheduler result shape triggers an error (not array)', async (t) => {
   const eventHandler = sinon.spy();
 
