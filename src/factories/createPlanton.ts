@@ -162,8 +162,8 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
 
           const limit = concurrency - activeTaskInstructions.length;
 
-          if (limit < 1) {
-            throw new UnexpectedStateError('Limit cannot be less than 1.');
+          if (limit < 0) {
+            throw new UnexpectedStateError('Limit cannot be less than 0.');
           }
 
           try {
