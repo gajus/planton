@@ -301,7 +301,7 @@ test('invokes schedule with the current active task instructions', async (t) => 
   await planton.terminate();
 });
 
-test('invokes `delay` with the number of attempts since the last time `schedule` produced results', async (t) => {
+test('invokes `calculateDelay` with the number of attempts since the last time `schedule` produced results', async (t) => {
   const schedule = sinon
     .stub()
     .onFirstCall()
