@@ -16,7 +16,7 @@ test('schedules tasks at a interval', async (t) => {
     },
     tasks: [
       {
-        delay: () => {
+        calculateDelay: () => {
           return 90;
         },
         name: 'foo',
@@ -40,10 +40,10 @@ test('throws if concurrency is lower than 1', (t) => {
       },
       tasks: [
         {
-          concurrency: 0,
-          delay: () => {
+          calculateDelay: () => {
             return 90;
           },
+          concurrency: 0,
           name: 'foo',
           schedule: async () => {
             return [];
@@ -67,7 +67,7 @@ test('throws if multiple tasks are registered with the same name', (t) => {
       },
       tasks: [
         {
-          delay: () => {
+          calculateDelay: () => {
             return 90;
           },
           name: 'foo',
@@ -76,7 +76,7 @@ test('throws if multiple tasks are registered with the same name', (t) => {
           },
         },
         {
-          delay: () => {
+          calculateDelay: () => {
             return 90;
           },
           name: 'foo',
@@ -108,7 +108,7 @@ test('stops scheduling after Planton is terminated', async (t) => {
     },
     tasks: [
       {
-        delay: () => {
+        calculateDelay: () => {
           return 200;
         },
         name: 'foo',
@@ -141,7 +141,7 @@ test('cancels delay when Planton is terminated', async (t) => {
     },
     tasks: [
       {
-        delay: () => {
+        calculateDelay: () => {
           return 500;
         },
         name: 'foo',
@@ -171,10 +171,10 @@ test('emits "task" event for every new task instruction', async (t) => {
     },
     tasks: [
       {
-        concurrency: 2,
-        delay: () => {
+        calculateDelay: () => {
           return 100;
         },
+        concurrency: 2,
         name: 'foo',
         schedule,
       },
@@ -214,10 +214,10 @@ test('does not attempt to schedule tasks when active tasks >= concurrency limit'
     },
     tasks: [
       {
-        concurrency: 1,
-        delay: () => {
+        calculateDelay: () => {
           return 100;
         },
+        concurrency: 1,
         name: 'foo',
         schedule,
       },
@@ -248,10 +248,10 @@ test('invokes schedule with the limit adjusted based on the number of current ac
     },
     tasks: [
       {
-        concurrency: 3,
-        delay: () => {
+        calculateDelay: () => {
           return 100;
         },
+        concurrency: 3,
         name: 'foo',
         schedule,
       },
@@ -280,10 +280,10 @@ test('invokes schedule with the current active task instructions', async (t) => 
     },
     tasks: [
       {
-        concurrency: 3,
-        delay: () => {
+        calculateDelay: () => {
           return 100;
         },
+        concurrency: 3,
         name: 'foo',
         schedule,
       },
@@ -319,7 +319,7 @@ test('invokes `delay` with the number of attempts since the last time `schedule`
     },
     tasks: [
       {
-        delay: calculateDelay,
+        calculateDelay,
         name: 'foo',
         schedule,
       },
@@ -344,7 +344,7 @@ test('terminate waits for scheduling to complete', async (t) => {
     },
     tasks: [
       {
-        delay: () => {
+        calculateDelay: () => {
           return 50;
         },
         name: 'foo',
@@ -377,7 +377,7 @@ test('emits error if scheduler produces an error', async (t) => {
     },
     tasks: [
       {
-        delay: () => {
+        calculateDelay: () => {
           return 50;
         },
         name: 'foo',
@@ -415,10 +415,10 @@ test('emits error if scheduler produces more results than the supplied limit', a
     },
     tasks: [
       {
-        concurrency: 1,
-        delay: () => {
+        calculateDelay: () => {
           return 50;
         },
+        concurrency: 1,
         name: 'foo',
         schedule: async () => {
           return [
@@ -458,7 +458,7 @@ test('unexpected scheduler result shape triggers an error (not array)', async (t
     },
     tasks: [
       {
-        delay: () => {
+        calculateDelay: () => {
           return 50;
         },
         name: 'foo',
@@ -499,7 +499,7 @@ test('unexpected scheduler result shape triggers an error (not an array of strin
     },
     tasks: [
       {
-        delay: () => {
+        calculateDelay: () => {
           return 50;
         },
         name: 'foo',
@@ -558,14 +558,14 @@ test('high-frequency issues do not block other tasks', async (t) => {
     },
     tasks: [
       {
-        delay: () => {
+        calculateDelay: () => {
           return 5;
         },
         name: 'foo',
         schedule: foo,
       },
       {
-        delay: () => {
+        calculateDelay: () => {
           return 50;
         },
         name: 'bar',
@@ -601,21 +601,21 @@ test('scheduler executions are evenly distributed', async (t) => {
     },
     tasks: [
       {
-        delay: () => {
+        calculateDelay: () => {
           return 5;
         },
         name: 'foo',
         schedule: foo,
       },
       {
-        delay: () => {
+        calculateDelay: () => {
           return 5;
         },
         name: 'bar',
         schedule: bar,
       },
       {
-        delay: () => {
+        calculateDelay: () => {
           return 5;
         },
         name: 'baz',
@@ -642,10 +642,10 @@ test('continues to attempt scheduling tasks that breach concurrency', async (t) 
     getActiveTaskInstructions,
     tasks: [
       {
-        concurrency: 1,
-        delay: () => {
+        calculateDelay: () => {
           return 10;
         },
+        concurrency: 1,
         name: 'foo',
         schedule: () => {
           throw new Error('Should not be called.');
@@ -672,7 +672,7 @@ test('continues to attempt scheduling tasks that produce invalid instructions (n
     getActiveTaskInstructions,
     tasks: [
       {
-        delay: () => {
+        calculateDelay: () => {
           return 10;
         },
         name: 'foo',
@@ -709,7 +709,7 @@ test('continues to attempt scheduling tasks that produce invalid instructions (n
     getActiveTaskInstructions,
     tasks: [
       {
-        delay: () => {
+        calculateDelay: () => {
           return 10;
         },
         name: 'foo',
@@ -748,10 +748,10 @@ test('continues to attempt scheduling tasks that produce more instructions than 
     getActiveTaskInstructions,
     tasks: [
       {
-        concurrency: 1,
-        delay: () => {
+        calculateDelay: () => {
           return 10;
         },
+        concurrency: 1,
         name: 'foo',
         schedule: async () => {
           return [

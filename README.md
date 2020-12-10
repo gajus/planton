@@ -53,15 +53,15 @@ type Schedule = (configuration: ScheduleConfiguration) => Promise<TaskInstructio
 /**
  * Produces a number (time in milliseconds) representing how long Planton must wait before attempting `schedule` function.
  */
-type Delay = (attemptNumber: number) => number;
+type CalculateDelay = (attemptNumber: number) => number;
 
 /**
  * @property concurrency Together with `getActiveTaskInstructions`, the `concurrency` setting is used to generate `limit` value that is passed to task scheduler.
  * @property name A unique name of the task. Used to identify task scheduler in errors and for tracking active task instructions (see `getActiveTaskInstructions`).
  */
 type TaskInput = {
+  readonly calculateDelay?: CalculateDelay;
   readonly concurrency?: number;
-  readonly delay?: Delay;
   readonly name: string;
   readonly schedule: Schedule;
 };
@@ -192,10 +192,7 @@ const planton = createPlanton({
   },
   tasks: [
     {
-      // New task scheduling will be attempted only when there are less than 2
-      // active instructions for the current task.
-      concurrency: 2,
-      delay: (attemptNumber) => {
+      calculateDelay: (attemptNumber) => {
         // `attemptNumber` indicates how many times `schedule` was called
         // without producing new instructions.
         if (attemptNumber === 0) {
@@ -209,6 +206,9 @@ const planton = createPlanton({
           60 * 1000,
         );
       },
+      // New task scheduling will be attempted only when there are less than 2
+      // active instructions for the current task.
+      concurrency: 2,
       name: 'send_user_email',
       schedule: ({activeTaskInstructions, limit}) => {
         return pool.anyFirst(sql`
