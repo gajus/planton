@@ -37,10 +37,12 @@ type ErrorEvent = {
 
 /**
  * @property activeTaskInstructions A list of active task instructions as retrieved using `getActiveTaskInstructions`.
+ * @property concurrency Concurrency setting value.
  * @property limit A limit derived based on the value of `concurrency` and the number of `activeTaskInstructions` (CONCURRENCY - ACTIVE TASK INSTRUCTIONS = LIMIT).
  */
 type ScheduleConfiguration = {
   readonly activeTaskInstructions: TaskInstruction[];
+  readonly concurrency: number;
   readonly limit: number;
 };
 
@@ -167,6 +169,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
           try {
             taskInstructions = await inputTask.schedule({
               activeTaskInstructions,
+              concurrency,
               limit,
             });
           } catch (error) {
