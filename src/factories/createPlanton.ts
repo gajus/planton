@@ -54,7 +54,7 @@ type Schedule = (configuration: ScheduleConfiguration) => Promise<TaskInstructio
 /**
  * Produces a number (time in milliseconds) representing how long Planton must wait before attempting `schedule` function.
  */
-type CalculateDelay = (attemptNumber: number) => number;
+type CalculateDelay = (attemptNumber: number) => Promise<number> | number;
 
 /**
  * @property concurrency Together with `getActiveTaskInstructions`, the `concurrency` setting is used to generate `limit` value that is passed to task scheduler.
@@ -94,6 +94,10 @@ type Planton = {
   terminate: () => Promise<void>;
 }
 
+const defaultCalculateDelay: CalculateDelay = () => {
+  return 1_000;
+};
+
 const createPlanton = (configuration: PlantonConfiguration): Planton => {
   const {
     getActiveTaskInstructions,
@@ -112,9 +116,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
       }
     }
 
-    const calculateDelay = inputTask.calculateDelay || (() => {
-      return 1_000;
-    });
+    const calculateDelay = inputTask.calculateDelay || defaultCalculateDelay;
 
     const concurrency = inputTask.concurrency === undefined ? 1 : inputTask.concurrency;
 
@@ -140,7 +142,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
       (async () => {
         // eslint-disable-next-line no-unmodified-loop-condition
         while (active) {
-          const calculatedDelay = calculateDelay(task.attemptNumber || 0);
+          const calculatedDelay = await calculateDelay(task.attemptNumber || 0);
 
           if (calculatedDelay) {
             delayPromise = delay(calculatedDelay);

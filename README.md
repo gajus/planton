@@ -53,7 +53,7 @@ type Schedule = (configuration: ScheduleConfiguration) => Promise<TaskInstructio
 /**
  * Produces a number (time in milliseconds) representing how long Planton must wait before attempting `schedule` function.
  */
-type CalculateDelay = (attemptNumber: number) => number;
+type CalculateDelay = (attemptNumber: number) => Promise<number> | number;
 
 /**
  * @property concurrency Together with `getActiveTaskInstructions`, the `concurrency` setting is used to generate `limit` value that is passed to task scheduler.

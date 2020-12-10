@@ -357,13 +357,13 @@ test('terminate waits for scheduling to complete', async (t) => {
     ],
   });
 
-  await delay(50);
+  await delay(60);
 
   const startTermination = Date.now();
 
   await planton.terminate();
 
-  t.true(Date.now() - startTermination >= 500);
+  t.true(Date.now() - startTermination >= 400);
 });
 
 test('emits error if scheduler produces an error', async (t) => {
