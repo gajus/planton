@@ -131,6 +131,12 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
       schedule: inputTask.schedule,
     };
 
+    const taskName = task.name;
+
+    if (!taskName) {
+      throw new UnexpectedStateError('Task name cannot be empty.');
+    }
+
     const terminate = (() => {
       let delayPromise: any;
 
@@ -154,7 +160,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
             break;
           }
 
-          const activeTaskInstructions = await getActiveTaskInstructions(inputTask.name);
+          const activeTaskInstructions = await getActiveTaskInstructions(taskName);
 
           if (activeTaskInstructions.length >= concurrency) {
             continue;
@@ -181,12 +187,12 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
           } catch (error) {
             log.error({
               error: serializeError(error),
-              taskName: task.name,
+              taskName,
             }, 'scheduler produced an error');
 
             events.emit('error', {
               error,
-              taskName: task.name || '',
+              taskName,
             });
 
             taskInstructions = [];
@@ -194,13 +200,13 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
 
           if (!Array.isArray(taskInstructions)) {
             events.emit('error', {
-              error: new UnexpectedTaskInstructionsError(task.name || '', taskInstructions),
-              taskName: task.name || '',
+              error: new UnexpectedTaskInstructionsError(taskName, taskInstructions),
+              taskName,
             });
 
             log.error({
               taskInstructions,
-              taskName: task.name,
+              taskName,
             }, 'scheduler produced an unexpected result; result is not array');
 
             taskInstructions = [];
@@ -208,13 +214,13 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
 
           if (taskInstructions.length > limit) {
             events.emit('error', {
-              error: new UnexpectedTaskInstructionsError(task.name || '', taskInstructions),
-              taskName: task.name || '',
+              error: new UnexpectedTaskInstructionsError(taskName, taskInstructions),
+              taskName,
             });
 
             log.error({
               taskInstructions,
-              taskName: task.name,
+              taskName,
             }, 'scheduler produced an unexpected result; instruction number is greater than the limit');
 
             taskInstructions = [];
@@ -223,13 +229,13 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
           for (const taskInstruction of taskInstructions) {
             if (typeof taskInstruction !== 'string') {
               events.emit('error', {
-                error: new UnexpectedTaskInstructionsError(task.name || '', taskInstructions),
-                taskName: task.name || '',
+                error: new UnexpectedTaskInstructionsError(taskName, taskInstructions),
+                taskName,
               });
 
               log.error({
                 taskInstructions,
-                taskName: task.name,
+                taskName,
               }, 'scheduler produced an unexpected result; array members are not string');
 
               taskInstructions = [];
@@ -244,7 +250,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
             for (const taskInstruction of taskInstructions) {
               events.emit('task', {
                 instruction: taskInstruction,
-                taskName: task.name || '',
+                taskName,
               });
             }
           } else if (task.attemptNumber !== undefined) {
