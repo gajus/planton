@@ -43,6 +43,7 @@ type ScheduleConfiguration = {
   readonly activeTaskInstructions: TaskInstruction[];
   readonly concurrency: number;
   readonly limit: number;
+  readonly taskName: string;
 };
 
 /**

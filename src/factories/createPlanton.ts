@@ -44,6 +44,7 @@ type ScheduleConfiguration = {
   readonly activeTaskInstructions: TaskInstruction[];
   readonly concurrency: number;
   readonly limit: number;
+  readonly taskName: string;
 };
 
 /**
@@ -224,6 +225,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
               activeTaskInstructions,
               concurrency,
               limit,
+              taskName,
             });
           } catch (error) {
             log.error({
