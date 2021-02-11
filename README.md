@@ -77,7 +77,7 @@ type TaskInput = {
  * @property getActiveTaskInstructions Returns list of tasks that are currently being executed. Used for concurrency control.
  */
 type PlantonConfiguration = {
-  readonly getActiveTaskInstructions: (taskName: string) => TaskInstruction[];
+  readonly getActiveTaskInstructions: (taskName: string) => Promise<TaskInstruction[]>;
   readonly tasks: TaskInput[]
 };
 

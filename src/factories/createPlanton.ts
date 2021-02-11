@@ -1,6 +1,6 @@
 import delay from 'delay';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ts-expect-error
 import Deferred from 'promise-deferred';
 import {
   serializeError,
@@ -26,13 +26,13 @@ const log = Logger.child({
 type TaskInstruction = string;
 
 type TaskEvent = {
-  readonly taskName: string;
-  readonly instruction: string;
+  readonly taskName: string,
+  readonly instruction: string,
 };
 
 type ErrorEvent = {
-  readonly taskName: string;
-  readonly error: Error;
+  readonly taskName: string,
+  readonly error: Error,
 };
 
 /**
@@ -41,10 +41,10 @@ type ErrorEvent = {
  * @property limit A limit derived based on the value of `concurrency` and the number of `activeTaskInstructions` (CONCURRENCY - ACTIVE TASK INSTRUCTIONS = LIMIT).
  */
 type ScheduleConfiguration = {
-  readonly activeTaskInstructions: TaskInstruction[];
-  readonly concurrency: number;
-  readonly limit: number;
-  readonly taskName: string;
+  readonly activeTaskInstructions: TaskInstruction[],
+  readonly concurrency: number,
+  readonly limit: number,
+  readonly taskName: string,
 };
 
 /**
@@ -67,28 +67,28 @@ type CalculateLimit = (concurrency: number, activeTaskInstructions: TaskInstruct
  * @property name A unique name of the task. Used to identify task scheduler in errors and for tracking active task instructions (see `getActiveTaskInstructions`).
  */
 type TaskInput = {
-  readonly calculateDelay?: CalculateDelay;
-  readonly calculateLimit?: CalculateLimit;
-  readonly concurrency?: number;
-  readonly name: string;
-  readonly schedule: Schedule;
+  readonly calculateDelay?: CalculateDelay,
+  readonly calculateLimit?: CalculateLimit,
+  readonly concurrency?: number,
+  readonly name: string,
+  readonly schedule: Schedule,
 };
 
 /**
  * @property getActiveTaskInstructions Returns list of tasks that are currently being executed. Used for concurrency control.
  */
 type PlantonConfiguration = {
-  readonly getActiveTaskInstructions: (taskName: string) => TaskInstruction[];
-  readonly tasks: TaskInput[]
+  readonly getActiveTaskInstructions: (taskName: string) => Promise<TaskInstruction[]>,
+  readonly tasks: TaskInput[],
 };
 
 type InternalTask = {
-  attemptNumber: number;
+  attemptNumber: number,
 
-  readonly concurrency: number;
-  readonly name: string;
-  readonly schedule: Schedule;
-  readonly terminate: () => void;
+  readonly concurrency: number,
+  readonly name: string,
+  readonly schedule: Schedule,
+  readonly terminate: () => Promise<void>,
 };
 
 type EventMap = {
@@ -97,9 +97,9 @@ type EventMap = {
 };
 
 type Planton = {
-  events: Emitter<EventMap>;
-  terminate: () => Promise<void>;
-}
+  events: Emitter<EventMap>,
+  terminate: () => Promise<void>,
+};
 
 const defaultCalculateDelay: CalculateDelay = () => {
   return 1_000;
@@ -127,9 +127,9 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
       }
     }
 
-    const calculateDelay = inputTask.calculateDelay || defaultCalculateDelay;
+    const calculateDelay = inputTask.calculateDelay ?? defaultCalculateDelay;
 
-    const calculateLimit = inputTask.calculateLimit || defaultCalculateLimit;
+    const calculateLimit = inputTask.calculateLimit ?? defaultCalculateLimit;
 
     const concurrency = inputTask.concurrency === undefined ? 1 : inputTask.concurrency;
 
@@ -157,11 +157,10 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
 
       let active = true;
 
-      // eslint-disable-next-line complexity
       (async () => {
         // eslint-disable-next-line no-unmodified-loop-condition
         while (active) {
-          const calculatedDelay = await calculateDelay(task.attemptNumber || 0);
+          const calculatedDelay = await calculateDelay(task.attemptNumber ?? 0);
 
           if (calculatedDelay) {
             delayPromise = delay(calculatedDelay);
@@ -320,7 +319,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
     })();
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+    // @ts-expect-error
     task.terminate = terminate;
 
     tasks.push(task as InternalTask);
@@ -330,8 +329,8 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
     events,
     terminate: async () => {
       await Promise.all(
-        tasks.map((task) => {
-          return task.terminate();
+        tasks.map(async (task) => {
+          await task.terminate();
         }),
       );
     },

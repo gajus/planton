@@ -20,26 +20,26 @@
     "@types/set-interval-async": "^1.0.0",
     "es6-error": "^4.1.1",
     "promise-deferred": "^2.0.3",
-    "roarr": "^2.15.4",
-    "serialize-error": "^7.0.1"
+    "roarr": "^4.0.11",
+    "serialize-error": "^8.0.1"
   },
   "description": "Database-agnostic task scheduler.",
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
-    "@types/sinon": "^9.0.9",
-    "ava": "^3.14.0",
+    "@types/sinon": "^9.0.10",
+    "ava": "^3.15.0",
     "coveralls": "^3.1.0",
     "del-cli": "^3.0.1",
-    "delay": "^4.4.0",
-    "eslint": "^7.15.0",
-    "eslint-config-canonical": "^24.4.4",
-    "husky": "^4.3.5",
-    "lint-staged": "^10.5.3",
+    "delay": "^5.0.0",
+    "eslint": "^7.19.0",
+    "eslint-config-canonical": "^25.8.16",
+    "husky": "^5.0.9",
+    "lint-staged": "^10.5.4",
     "nyc": "^15.1.0",
-    "semantic-release": "^17.3.0",
-    "sinon": "^9.2.1",
+    "semantic-release": "^17.3.8",
+    "sinon": "^9.2.4",
     "ts-node": "^9.1.1",
-    "typescript": "^4.1.2"
+    "typescript": "^4.1.5"
   },
   "engines": {
     "node": ">=10"
@@ -54,7 +54,7 @@
     "scheduler"
   ],
   "license": "BSD-3-Clause",
-  "main": "./dist/index.js",
+  "main": "./dist/src/index.js",
   "name": "planton",
   "repository": {
     "type": "git",
@@ -65,6 +65,6 @@
     "lint": "eslint ./src ./test && tsc --noEmit",
     "test": "ava --verbose --serial"
   },
-  "typings": "./dist/index.d.ts",
+  "typings": "./dist/src/index.d.ts",
   "version": "1.0.0"
 }

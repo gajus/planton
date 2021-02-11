@@ -3,8 +3,12 @@
     "canonical",
     "canonical/typescript"
   ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
   "root": true,
   "rules": {
+    "@typescript-eslint/explicit-module-boundary-types": 0,
     "fp/no-events": 0
   }
 }

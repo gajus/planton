@@ -7,9 +7,9 @@ import ExtendableError from 'es6-error';
 export class PlantonError extends ExtendableError {}
 
 export class UnexpectedStateError extends PlantonError {
-  code: string;
+  public code: string;
 
-  constructor (message: string, code = 'UNEXPECTED_STATE_ERROR') {
+  public constructor (message: string, code = 'UNEXPECTED_STATE_ERROR') {
     super(message);
 
     this.code = code;
@@ -17,9 +17,9 @@ export class UnexpectedStateError extends PlantonError {
 }
 
 export class InvalidTaskConfigurationNameError extends UnexpectedStateError {
-  taskName: string;
+  public taskName: string;
 
-  constructor (taskName: string, message: string) {
+  public constructor (taskName: string, message: string) {
     super(
       message,
       'INVALID_TASK_CONFIGURATION',
@@ -30,9 +30,9 @@ export class InvalidTaskConfigurationNameError extends UnexpectedStateError {
 }
 
 export class DuplicateTaskNameError extends UnexpectedStateError {
-  duplicateTaskName: string;
+  public duplicateTaskName: string;
 
-  constructor (duplicateTaskName: any) {
+  public constructor (duplicateTaskName: any) {
     super(
       'Task name is duplicate.',
       'DUPLICATE_TASK_NAME',
@@ -43,11 +43,11 @@ export class DuplicateTaskNameError extends UnexpectedStateError {
 }
 
 export class UnexpectedTaskInstructionsError extends UnexpectedStateError {
-  taskName: string;
+  public taskName: string;
 
-  unexpectedTaskInstructions: any;
+  public unexpectedTaskInstructions: any;
 
-  constructor (taskName: string, unexpectedTaskInstructions: any) {
+  public constructor (taskName: string, unexpectedTaskInstructions: any) {
     super(
       'Unexpected task instructions.',
       'UNEXPECTED_TASK_INSTRUCTIONS',

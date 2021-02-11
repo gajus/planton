@@ -11,7 +11,7 @@ test('schedules tasks at a interval', async (t) => {
     .returns([]);
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -35,7 +35,7 @@ test('schedules tasks at a interval', async (t) => {
 test('throws if concurrency is lower than 1', (t) => {
   const error = t.throws(() => {
     createPlanton({
-      getActiveTaskInstructions: () => {
+      getActiveTaskInstructions: async () => {
         return [];
       },
       tasks: [
@@ -62,7 +62,7 @@ test('throws if concurrency is lower than 1', (t) => {
 test('throws if multiple tasks are registered with the same name', (t) => {
   const error = t.throws(() => {
     createPlanton({
-      getActiveTaskInstructions: () => {
+      getActiveTaskInstructions: async () => {
         return [];
       },
       tasks: [
@@ -103,7 +103,7 @@ test('stops scheduling after Planton is terminated', async (t) => {
     .throws();
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -136,7 +136,7 @@ test('cancels delay when Planton is terminated', async (t) => {
     .throws();
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -166,7 +166,7 @@ test('emits "task" event for every new task instruction', async (t) => {
   const eventHandler = sinon.spy();
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -206,7 +206,7 @@ test('does not attempt to schedule tasks when active tasks >= concurrency limit'
   const eventHandler = sinon.spy();
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [
         'foo',
         'bar',
@@ -240,7 +240,7 @@ test('invokes schedule with the limit adjusted based on the number of current ac
     .returns([]);
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [
         'foo',
         'bar',
@@ -272,7 +272,7 @@ test('invokes schedule with the current active task instructions', async (t) => 
     .returns([]);
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [
         'foo',
         'bar',
@@ -314,7 +314,7 @@ test('invokes `calculateDelay` with the number of attempts since the last time `
   const calculateDelay = sinon.stub().returns(50);
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -339,7 +339,7 @@ test('invokes `calculateDelay` with the number of attempts since the last time `
 
 test('terminate waits for scheduling to complete', async (t) => {
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -372,7 +372,7 @@ test('emits error if scheduler produces an error', async (t) => {
   const error = new Error('foo');
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -410,7 +410,7 @@ test('emits error if scheduler produces more results than the supplied limit', a
   const eventHandler = sinon.spy();
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -453,7 +453,7 @@ test('emits error if `calculateLimit` produces less than 0', async (t) => {
   const eventHandler = sinon.spy();
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -491,7 +491,7 @@ test('emits error if `calculateLimit` does not produce an integer', async (t) =>
   const eventHandler = sinon.spy();
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -529,7 +529,7 @@ test('unexpected scheduler result shape triggers an error (not array)', async (t
   const eventHandler = sinon.spy();
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -540,7 +540,7 @@ test('unexpected scheduler result shape triggers an error (not array)', async (t
         name: 'foo',
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error
         schedule: async () => {
           return {
             foo: 'bar',
@@ -570,7 +570,7 @@ test('unexpected scheduler result shape triggers an error (not an array of strin
   const eventHandler = sinon.spy();
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -581,7 +581,7 @@ test('unexpected scheduler result shape triggers an error (not an array of strin
         name: 'foo',
 
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error
         schedule: async () => {
           return [
             {
@@ -629,7 +629,7 @@ test('high-frequency issues do not block other tasks', async (t) => {
     });
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -672,7 +672,7 @@ test('scheduler executions are evenly distributed', async (t) => {
     .returns([]);
 
   const planton = createPlanton({
-    getActiveTaskInstructions: () => {
+    getActiveTaskInstructions: async () => {
       return [];
     },
     tasks: [
@@ -753,7 +753,7 @@ test('continues to attempt scheduling tasks that produce invalid instructions (n
         },
         name: 'foo',
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error
         schedule: () => {
           return {
             foo: 'bar',
@@ -790,7 +790,7 @@ test('continues to attempt scheduling tasks that produce invalid instructions (n
         },
         name: 'foo',
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
+        // @ts-expect-error
         schedule: () => {
           return [
             {
