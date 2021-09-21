@@ -320,6 +320,10 @@ However, for many use cases the above limitation shouldn't be an issue. As illus
 
 Planton is designed to solve the problem of concurrency and task scheduling by polling the underlying database to identify if tasks need & can be scheduled.
 
+Direct alternatives to Planton:
+
+* [bree](https://github.com/breejs/bree) – uses workers to spawn sandboxed processes, and supports async/await, retries, throttling, concurrency, and graceful shutdown.
+
 If you simply need to run tasks at a pre-defined time interval, then you may want to consider simpler alternatives such as the ones below.
 
 * [node-cron](https://github.com/node-cron/node-cron)
