@@ -1,13 +1,14 @@
 import test from 'ava';
 import delay from 'delay';
-import sinon from 'sinon';
+import {
+  stub, spy,
+} from 'sinon';
 import {
   createPlanton,
 } from '../../../src/factories/createPlanton';
 
 test('schedules tasks at a interval', async (t) => {
-  const schedule = sinon
-    .stub()
+  const schedule = stub()
     .returns([]);
 
   const planton = createPlanton({
@@ -95,8 +96,7 @@ test('throws if multiple tasks are registered with the same name', (t) => {
 });
 
 test('stops scheduling after Planton is terminated', async (t) => {
-  const schedule = sinon
-    .stub()
+  const schedule = stub()
     .onFirstCall()
     .returns([])
     .onSecondCall()
@@ -131,8 +131,7 @@ test('stops scheduling after Planton is terminated', async (t) => {
 test('cancels delay when Planton is terminated', async (t) => {
   t.timeout(100);
 
-  const schedule = sinon
-    .stub()
+  const schedule = stub()
     .throws();
 
   const planton = createPlanton({
@@ -156,14 +155,13 @@ test('cancels delay when Planton is terminated', async (t) => {
 });
 
 test('emits "task" event for every new task instruction', async (t) => {
-  const schedule = sinon
-    .stub()
+  const schedule = stub()
     .returns([
       'bar',
       'baz',
     ]);
 
-  const eventHandler = sinon.spy();
+  const eventHandler = spy();
 
   const planton = createPlanton({
     getActiveTaskInstructions: async () => {
@@ -199,11 +197,10 @@ test('emits "task" event for every new task instruction', async (t) => {
 });
 
 test('does not attempt to schedule tasks when active tasks >= concurrency limit', async (t) => {
-  const schedule = sinon
-    .stub()
+  const schedule = stub()
     .throws();
 
-  const eventHandler = sinon.spy();
+  const eventHandler = spy();
 
   const planton = createPlanton({
     getActiveTaskInstructions: async () => {
@@ -235,8 +232,7 @@ test('does not attempt to schedule tasks when active tasks >= concurrency limit'
 });
 
 test('invokes schedule with the limit adjusted based on the number of current active tasks', async (t) => {
-  const schedule = sinon
-    .stub()
+  const schedule = stub()
     .returns([]);
 
   const planton = createPlanton({
@@ -267,8 +263,7 @@ test('invokes schedule with the limit adjusted based on the number of current ac
 });
 
 test('invokes schedule with the current active task instructions', async (t) => {
-  const schedule = sinon
-    .stub()
+  const schedule = stub()
     .returns([]);
 
   const planton = createPlanton({
@@ -302,8 +297,7 @@ test('invokes schedule with the current active task instructions', async (t) => 
 });
 
 test('invokes `calculateDelay` with the number of attempts since the last time `schedule` produced results', async (t) => {
-  const schedule = sinon
-    .stub()
+  const schedule = stub()
     .onFirstCall()
     .returns([])
     .onSecondCall()
@@ -311,7 +305,7 @@ test('invokes `calculateDelay` with the number of attempts since the last time `
       'foo',
     ]);
 
-  const calculateDelay = sinon.stub().returns(50);
+  const calculateDelay = stub().returns(50);
 
   const planton = createPlanton({
     getActiveTaskInstructions: async () => {
@@ -367,7 +361,7 @@ test('terminate waits for scheduling to complete', async (t) => {
 });
 
 test('emits error if scheduler produces an error', async (t) => {
-  const eventHandler = sinon.spy();
+  const eventHandler = spy();
 
   const error = new Error('foo');
 
@@ -383,8 +377,6 @@ test('emits error if scheduler produces an error', async (t) => {
         name: 'foo',
         schedule: async () => {
           throw error;
-
-          return [];
         },
       },
     ],
@@ -407,7 +399,7 @@ test('emits error if scheduler produces an error', async (t) => {
 });
 
 test('emits error if scheduler produces more results than the supplied limit', async (t) => {
-  const eventHandler = sinon.spy();
+  const eventHandler = spy();
 
   const planton = createPlanton({
     getActiveTaskInstructions: async () => {
@@ -450,7 +442,7 @@ test('emits error if scheduler produces more results than the supplied limit', a
 });
 
 test('emits error if `calculateLimit` produces less than 0', async (t) => {
-  const eventHandler = sinon.spy();
+  const eventHandler = spy();
 
   const planton = createPlanton({
     getActiveTaskInstructions: async () => {
@@ -488,7 +480,7 @@ test('emits error if `calculateLimit` produces less than 0', async (t) => {
 });
 
 test('emits error if `calculateLimit` does not produce an integer', async (t) => {
-  const eventHandler = sinon.spy();
+  const eventHandler = spy();
 
   const planton = createPlanton({
     getActiveTaskInstructions: async () => {
@@ -526,7 +518,7 @@ test('emits error if `calculateLimit` does not produce an integer', async (t) =>
 });
 
 test('unexpected scheduler result shape triggers an error (not array)', async (t) => {
-  const eventHandler = sinon.spy();
+  const eventHandler = spy();
 
   const planton = createPlanton({
     getActiveTaskInstructions: async () => {
@@ -567,7 +559,7 @@ test('unexpected scheduler result shape triggers an error (not array)', async (t
 });
 
 test('unexpected scheduler result shape triggers an error (not an array of string literals)', async (t) => {
-  const eventHandler = sinon.spy();
+  const eventHandler = spy();
 
   const planton = createPlanton({
     getActiveTaskInstructions: async () => {
@@ -612,16 +604,14 @@ test('unexpected scheduler result shape triggers an error (not an array of strin
 });
 
 test('high-frequency issues do not block other tasks', async (t) => {
-  const foo = sinon
-    .stub()
+  const foo = stub()
     .callsFake(async () => {
       await delay(10);
 
       return [];
     });
 
-  const bar = sinon
-    .stub()
+  const bar = stub()
     .callsFake(async () => {
       await delay(10);
 
@@ -659,16 +649,13 @@ test('high-frequency issues do not block other tasks', async (t) => {
 });
 
 test('scheduler executions are evenly distributed', async (t) => {
-  const foo = sinon
-    .stub()
+  const foo = stub()
     .returns([]);
 
-  const bar = sinon
-    .stub()
+  const bar = stub()
     .returns([]);
 
-  const baz = sinon
-    .stub()
+  const baz = stub()
     .returns([]);
 
   const planton = createPlanton({
@@ -710,8 +697,7 @@ test('scheduler executions are evenly distributed', async (t) => {
 });
 
 test('continues to attempt scheduling tasks that breach concurrency', async (t) => {
-  const getActiveTaskInstructions = sinon
-    .stub()
+  const getActiveTaskInstructions = stub()
     .returns(['1']);
 
   const planton = createPlanton({
@@ -738,10 +724,9 @@ test('continues to attempt scheduling tasks that breach concurrency', async (t) 
 });
 
 test('continues to attempt scheduling tasks that produce invalid instructions (not array)', async (t) => {
-  const eventHandler = sinon.stub();
+  const eventHandler = stub();
 
-  const getActiveTaskInstructions = sinon
-    .stub()
+  const getActiveTaskInstructions = stub()
     .returns([]);
 
   const planton = createPlanton({
@@ -775,10 +760,9 @@ test('continues to attempt scheduling tasks that produce invalid instructions (n
 });
 
 test('continues to attempt scheduling tasks that produce invalid instructions (not an array of string literals)', async (t) => {
-  const eventHandler = sinon.stub();
+  const eventHandler = stub();
 
-  const getActiveTaskInstructions = sinon
-    .stub()
+  const getActiveTaskInstructions = stub()
     .returns([]);
 
   const planton = createPlanton({
@@ -814,10 +798,9 @@ test('continues to attempt scheduling tasks that produce invalid instructions (n
 });
 
 test('continues to attempt scheduling tasks that produce more instructions than the supplied limit', async (t) => {
-  const eventHandler = sinon.spy();
+  const eventHandler = spy();
 
-  const getActiveTaskInstructions = sinon
-    .stub()
+  const getActiveTaskInstructions = stub()
     .returns([]);
 
   const planton = createPlanton({

@@ -1,7 +1,3 @@
-// @flow
-
-/* eslint-disable fp/no-class, fp/no-this */
-
 import ExtendableError from 'es6-error';
 
 export class PlantonError extends ExtendableError {}
@@ -32,7 +28,7 @@ export class InvalidTaskConfigurationNameError extends UnexpectedStateError {
 export class DuplicateTaskNameError extends UnexpectedStateError {
   public duplicateTaskName: string;
 
-  public constructor (duplicateTaskName: any) {
+  public constructor (duplicateTaskName: string) {
     super(
       'Task name is duplicate.',
       'DUPLICATE_TASK_NAME',
@@ -45,9 +41,9 @@ export class DuplicateTaskNameError extends UnexpectedStateError {
 export class UnexpectedTaskInstructionsError extends UnexpectedStateError {
   public taskName: string;
 
-  public unexpectedTaskInstructions: any;
+  public unexpectedTaskInstructions: string[];
 
-  public constructor (taskName: string, unexpectedTaskInstructions: any) {
+  public constructor (taskName: string, unexpectedTaskInstructions: string[]) {
     super(
       'Unexpected task instructions.',
       'UNEXPECTED_TASK_INSTRUCTIONS',

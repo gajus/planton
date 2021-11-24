@@ -1,6 +1,5 @@
 import delay from 'delay';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
+// @ts-expect-error -- types not available
 import Deferred from 'promise-deferred';
 import {
   serializeError,
@@ -26,19 +25,20 @@ const log = Logger.child({
 type TaskInstruction = string;
 
 type TaskEvent = {
-  readonly taskName: string,
   readonly instruction: string,
+  readonly taskName: string,
 };
 
 type ErrorEvent = {
-  readonly taskName: string,
   readonly error: Error,
+  readonly taskName: string,
 };
 
 /**
  * @property activeTaskInstructions A list of active task instructions as retrieved using `getActiveTaskInstructions`.
  * @property concurrency The current concurrency setting value.
  * @property limit A limit derived based on the value of `concurrency` and the number of `activeTaskInstructions` (CONCURRENCY - ACTIVE TASK INSTRUCTIONS = LIMIT).
+ * @property taskName Task name.
  */
 type ScheduleConfiguration = {
   readonly activeTaskInstructions: TaskInstruction[],
@@ -151,7 +151,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
     }
 
     const terminate = (() => {
-      let delayPromise: any;
+      let delayPromise: Promise<void>;
 
       const deferredTermination = new Deferred();
 
@@ -287,6 +287,7 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
           }
 
           if (taskInstructions.length > 0) {
+            // eslint-disable-next-line require-atomic-updates
             task.attemptNumber = 0;
 
             for (const taskInstruction of taskInstructions) {
@@ -310,7 +311,8 @@ const createPlanton = (configuration: PlantonConfiguration): Planton => {
       return () => {
         active = false;
 
-        if (delayPromise) {
+        if (delayPromise !== undefined) {
+          // @ts-expect-error -- deferred-promise types are not available
           delayPromise.clear();
         }
 
