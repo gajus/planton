@@ -1,6 +1,6 @@
 # Planton 🐳
 
-[![Travis build status](https://img.shields.io/travis/com/gajus/planton?style=flat-square)](https://travis-ci.com/gajus/planton)
+[![Travis build status](https://img.shields.io/travis/com/gajus/planton?style=flat-square)](https://travis-ci.com/github/gajus/planton)
 [![Coveralls](https://img.shields.io/coveralls/gajus/planton.svg?style=flat-square)](https://coveralls.io/github/gajus/planton)
 [![NPM version](http://img.shields.io/npm/v/planton.svg?style=flat-square)](https://www.npmjs.org/package/planton)
 [![Canonical Code Style](https://img.shields.io/badge/code%20style-canonical-blue.svg?style=flat-square)](https://github.com/gajus/canonical)
